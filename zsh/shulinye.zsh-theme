@@ -1,5 +1,5 @@
 #Turn me red if I'm ROOT
-if [ $UID -eq 0 ]; then NCOLOR="red"; else NCOLOR="green"; fi
+if [ $(id -u) -eq 0 ]; then NCOLOR="red"; else NCOLOR="green"; fi
 
 #Show if I'm over SSH
 function ssh_connection() {

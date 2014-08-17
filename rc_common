@@ -1,0 +1,236 @@
+# If not running interactively, skip the rest
+[ -z "$PS1" ] && return
+
+# Source global definitions (if any)
+
+if [ -f /etc/bashrc ]; then
+      . /etc/bashrc   # --> Read /etc/bashrc, if present.
+fi
+
+if [ -f ~/.bash_aliases ]; then
+ . ~/.bash_aliases
+fi
+
+#Making common commands more awesome by default
+alias cp="cp -iv"
+alias mv="mv -iv"
+alias rm="rm -I"
+alias ll='ls -lB'
+alias la="ls -alB" #B - ignores backup
+alias psa="ps aux | sort -nrk 4 | head"
+alias df='df -h'
+alias mkdir="mkdir -pv"
+alias ping='ping -c 5' #this causes ping to terminate after five pings
+alias wget='wget -c'
+alias texworks="texworks -stylesheet ~/.TeXworks/configuration/mystyle.css" #causes texworks to autoload my stylesheet
+
+# lua's silly cat
+alias less='less -FX'
+function cat {
+    if [[ "$#" -eq 1 ]]
+        then less "$1"
+        else /usr/bin/env cat "$@"
+    fi
+}
+
+#Trying to reduce the amount of typing I have to do:
+alias h='history | grep'
+
+#New commands
+alias documents="cd ~/Documents"
+alias videos="cd ~/Videos"
+alias downloads='cd ~/Downloads'
+alias desktop='cd ~/Desktop'
+alias music='cd ~/Music'
+alias try="gnome-open"
+alias svim="sudo vim"
+alias del='mv --target-directory=~/.Trash/' #delete; that symlinks to /tmp/
+alias cleandir='rm -f "#"* "."*~ *~ *.bak *.dvi *.aux *.log'
+alias back='cd - > /dev/null'
+
+#Trying and failing to be funny
+alias fuckyou="echo 'Why, how dare you? Do you kiss your mother with that mouth?' && sleep 2 && sudo reboot"
+alias transfer-monies="echo 'How about no?'"
+function import {
+    ipython -c "import $1" -i
+}
+
+# screenshots
+alias screenshot='import -window root ~/Desktop/`date +%Y%m%d%H%M`.png'
+
+#Sudo apt-get!
+alias update='sudo apt-get update'
+function upgrade()
+{
+    sudo apt-get dist-upgrade
+    sudo python -c "import pip; import subprocess; [subprocess.call('pip install --upgrade ' + dist.project_name, shell=True) for dist in pip.get_installed_distributions()]"
+}
+alias clean='sudo apt-get autoclean && sudo apt-get autoremove'
+function canhaz()
+{
+    if ! sudo apt-get install "$1" ; then
+    echo "----------------------"
+	echo "Searching for package" && apt-cache search "$1"
+    fi
+}
+
+#list all directories in current directories
+alias ld='ls -l | grep ^d'
+
+alias diskspace="du -S | sort -n -r |more"
+
+# It creates a new directory and then changes to that new directory
+function mkdcd ()
+{
+    if [ $# -ne 1 ]; then
+        echo 'function takes exactly one argument!'
+        return 1
+    fi
+    mkdir "$1"
+    cd "$1"
+}
+
+# heading up directories
+up(){
+  local d=""
+  limit=$1
+  for ((i=1 ; i <= limit ; i++))
+    do
+      d=$d/..
+    done
+  d=$(echo $d | sed 's/^\///')
+  if [ -z "$d" ]; then
+    d=..
+  fi
+  cd $d
+}
+
+extract () {
+     if [ -f $1 ] ; then
+         case $1 in
+             *.tar.bz2)   tar xjf $1        ;;
+             *.tar.gz)    tar xzf $1     ;;
+             *.bz2)       bunzip2 $1       ;;
+             *.rar)       rar x $1     ;;
+             *.gz)        gunzip $1     ;;
+             *.tar)       tar xf $1        ;;
+             *.tbz2)      tar xjf $1      ;;
+             *.tgz)       tar xzf $1       ;;
+             *.zip)       unzip $1     ;;
+             *.Z)         uncompress $1  ;;
+             *.7z)        7z x $1    ;;
+             *)           echo "'$1' cannot be extracted via extract()" ;;
+         esac
+     else
+         echo "'$1' is not a valid file"
+     fi
+}
+
+#wiki summaries!
+function wiki {
+  dig +short txt "$*".wp.dg.cx
+}
+
+
+function google (){
+    if pidof firefox>/dev/null
+    then
+        firefox -search $1
+    else
+        lynx "http://www.google.com/search?hl=en&tbo=d&output=search&sclient=psy-ab&q=$1&=&=&oq=&gs_l=&pbx=1"
+    fi
+}
+
+# Check to see if a site is down for everyone or just me
+function downforme() {
+	if [ $# = 0 ]
+	then
+		echo -e "${YELLOW}usage:${NC} downforme website_url"
+	else
+		JUSTYOUARRAY=(`lynx -dump http://downforeveryoneorjustme.com/$1 | grep -o "It's just you"`)
+		if [ ${#JUSTYOUARRAY} != 0 ]
+		then
+			echo -e "${RED}It's just you. \n${NC}$1 is up."
+		else
+			echo -e "${GREEN}It's not just you! \n${NC}$1 looks down from here."
+		fi
+	fi
+}
+
+
+# Random oneliners
+function oneliners()
+{
+w3m -dump_source http://www.onelinerz.net/random-one-liners/1/ | awk ' /.*<div id=\"oneliner_[0-9].*/ {while (! /\/div/ ) { gsub("\n", ""); getline; }; gsub (/<[^>][^>]*>/, "", $0); print $0}'
+}
+
+# don't put duplicate lines in the history. See bash(1) for more options
+# ... or force ignoredups and ignorespace
+HISTCONTROL=ignoredups:ignorespace
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=100000
+HISTFILESIZE=200000
+
+# things to get an android phone to sync
+alias android-connect="mtpfs -o allow_other /media/LGOptimus"
+alias android-disconnect="fusermount -u /media/LGOptimus"
+
+#Welcome screen
+echo -ne "${LIGHTPURPLE}" "Hello, $USER. Today is "; date
+echo -e "${WHITE}"; cal;
+echo -ne "${CYAN}"; fortune;
+echo -ne "${LIGHTPURPLE}Sysinfo:";uptime ;echo ""
+
+#Opens current directory in a file explorer
+alias explore='nautilus .'
+
+#Opens current directory in a file explorer with super user privileges
+alias suexplore='sudo nautilus .'
+
+# Adds some text in the terminal frame (if applicable).
+function xtitle()
+{
+    case "$TERM" in
+    *term* | rxvt)
+        echo -en  "\e]0;$*\a" ;;
+    *)  ;;
+    esac
+}
+
+# Aliases that use xtitle
+alias top='xtitle Processes on $HOST && top'
+
+xtitle shulinye@$HOST
+
+# Aliases to switch between dvorak and qwerty
+alias asdf="xmodmap $HOME/.DXmodmap"
+alias aoeu="xmodmap $HOME/.Xmodmap"
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(lesspipe)"
+
+netinfo ()
+{
+echo "--------------- Network Information ---------------"
+/sbin/ifconfig | awk /'inet addr/ {print $2}'
+echo ""
+/sbin/ifconfig | awk /'Bcast/ {print $3}'
+echo ""
+/sbin/ifconfig | awk /'inet addr/ {print $4}'
+
+# /sbin/ifconfig | awk /'HWaddr/ {print $4,$5}'
+echo "---------------------------------------------------"
+}
+
+#. /usr/share/autojump/autojump.sh
+# using fasd now
+
+export EDITOR=/usr/bin/vim
+#export AUTOJUMP_AUTOCOMPLETE_CMDS='cp vim'
+
+#Make sure you have Athena tickets
+#echo -e "${WHITE}Checking for Athena tickets"
+#kinit -R &>/dev/null
+#(klist -s || kinit -l7d || kinit -l7d || kinit -l7d) && (aklog || attach shulinye || (kdestroy && kinit -l7d || kinit -l7d || kinit -l7d) && aklog || attach shulinye)
+
