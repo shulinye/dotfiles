@@ -8,3 +8,7 @@ Geared mostly towards ubuntu or ubuntu-based systems. Pulled from various places
 =bashrc/zshrc=
 
 Both of these import .rc_common
+
+=License=
+
+MIT License unless attributed otherwise.
