@@ -10,4 +10,6 @@
 
 #Ignore tmpfiles, I have no clue who makes these....
 *.docx#
+*.csv#
+*.doc#
 *.zim-new~
