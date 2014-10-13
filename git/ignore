@@ -13,3 +13,6 @@
 *.csv#
 *.doc#
 *.zim-new~
+
+#Ignore Dropbox conflicted files
+*conflicted\ copy*
