@@ -12,6 +12,8 @@
 *.docx#
 *.csv#
 *.doc#
+*.xlsx#
+*.xls#
 *.zim-new~
 
 #Ignore Dropbox conflicted files
