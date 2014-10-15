@@ -15,6 +15,7 @@
 *.xlsx#
 *.xls#
 *.zim-new~
+*.autosave
 
 #Ignore Dropbox conflicted files
 *conflicted\ copy*
