@@ -1,3 +1,7 @@
+#Ignore secrets
+*/sekrit
+*/sekrit/*
+
 #ignore pdflatex extra files
 *.aux
 *.log
@@ -17,6 +21,7 @@
 *.xls#
 *.zim-new~
 *.autosave
+*.fuse_hidden*
 
 #Ignore Dropbox conflicted files
 *conflicted\ copy*
