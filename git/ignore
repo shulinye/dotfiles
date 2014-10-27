@@ -25,3 +25,6 @@
 
 #Ignore Dropbox conflicted files
 *conflicted\ copy*
+
+#Ignore gpg
+*.gpg
