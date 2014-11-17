@@ -1,0 +1,5 @@
+/* Don't forget to alter /usr/share/applications/texworks.desktop with Exec=texworks %F -stylesheet /home/shulinye/.TeXworks/configuration/mystyle.css */ 
+QTextEdit {
+  background-color:white;  
+  color: black;            /* sets the main text color */
+}
