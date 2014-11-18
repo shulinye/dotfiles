@@ -24,6 +24,7 @@
 *.zim-new~
 *.autosave
 *.fuse_hidden*
+*.odt#
 
 #Ignore Dropbox conflicted files
 *conflicted\ copy*
