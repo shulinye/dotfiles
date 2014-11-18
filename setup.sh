@@ -4,11 +4,16 @@ error="$HOME/error_`date +%F`"
 echo -n > $error #clearing errorlog
 dotfiles="$HOME/.dotfiles"
 
+if [ -z "$HOST" ]; then
+    echo "What's my hostname?"
+    read HOST
+fi
+
 echo "backing up current packages"
-dpkg --get-selections > $HOME/"$HOST-installed_packages_`date +%F`.txt"
-sudo cp /etc/apt/sources.list $HOME/"$HOST-sources-`date +%F`.list"
-sudo cp /etc/apt/sources.list.d ~/"$HOST-sources-`date +%F`.list.d" -r
-sudo apt-key exportall > ~/"$HOST-repo-`date +%F`.keys"
+dpkg --get-selections > "$HOME/$HOST-installed_packages_`date +%F`.txt"
+sudo cp /etc/apt/sources.list "$HOME/$HOST-sources-`date +%F`.list"
+sudo cp /etc/apt/sources.list.d "$HOME/$HOST-sources-`date +%F`.list.d" -r
+sudo apt-key exportall > "$HOME/$HOST-repo-`date +%F`.keys"
 
 if hash pip 2>/dev/null; then
     pip freeze > $HOME/$HOST-pip-packages_`date +%F`.txt 2>>$error
@@ -34,5 +39,5 @@ fi
 
 ln -sf $dotfiles/git/ignore $HOME/.config/git/ignore
 
-echo "Errors may have happened, check ~/error_`date +%F`"
+echo "Errors may have happened, check $error"
 cat $error
