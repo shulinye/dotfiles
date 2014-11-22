@@ -25,6 +25,7 @@
 *.autosave
 *.fuse_hidden*
 *.odt#
+*.ods#
 
 #Ignore Dropbox conflicted files
 *conflicted\ copy*
