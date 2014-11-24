@@ -127,9 +127,10 @@ extract () {
 }
 
 #wiki summaries!
-function wiki {
-  dig +short txt "$*".wp.dg.cx
-}
+#function wiki {
+#  dig +short txt "$*".wp.dg.cx
+#}
+#this seems to have stopped working?
 
 
 function google (){
