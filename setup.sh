@@ -10,13 +10,21 @@ if [ -z "$HOST" ]; then
 fi
 
 echo "backing up current packages"
-dpkg --get-selections > "$HOME/$HOST-installed_packages_`date +%F`.txt"
-sudo cp /etc/apt/sources.list "$HOME/$HOST-sources-`date +%F`.list"
-sudo cp /etc/apt/sources.list.d "$HOME/$HOST-sources-`date +%F`.list.d" -r
-sudo apt-key exportall > "$HOME/$HOST-repo-`date +%F`.keys"
+if [ ! -d "$HOME/backups" ]; then
+    mkdir -p "$HOME/backups"
+    backups="$HOME/backups"
+fi
+
+dpkg --get-selections > "$backups/$HOST-installed_packages_`date +%F`.txt"
+sudo cp /etc/apt/sources.list "$backups/$HOST-sources-`date +%F`.list"
+sudo cp /etc/apt/sources.list.d "$backups/$HOST-sources-`date +%F`.list.d" -r
+sudo apt-key exportall > "$backups/$HOST-repo-`date +%F`.keys"
+
+echo "updating repos"
+sudo apt-get update
 
 if hash pip 2>/dev/null; then
-    pip freeze > $HOME/$HOST-pip-packages_`date +%F`.txt 2>>$error
+    pip freeze > $backups/$HOST-pip-packages_`date +%F`.txt 2>>$error
 else
     echo "pip not installed, continuing happily"
     echo "pip not installed" >>$error
