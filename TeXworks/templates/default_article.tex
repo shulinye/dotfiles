@@ -55,6 +55,10 @@
 \newcommand*\ruleline[2][1]{\par\noindent\raisebox{.8ex}{\makebox[#1\linewidth]{\hrulefill\hspace{1ex}\raisebox{-.8ex}{#2}\hspace{1ex}\hrulefill}}}
 \newcommand{\partialdev}[2][]{\frac{\partial #1}{\partial #2}} %partial derivatives
 
+% For long documents
+%\numberwithin{equation}{section}
+%\numberwithin{figure}{section}
+
 %%Actual contents
 
 \title{Brief Article}
@@ -73,7 +77,11 @@
 
 \section{test}
 
-\newpage
+\begin{equation}
+     f(x)=(x+a)(x+b)
+ \end{equation}
+
+%\newpage
 %\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}} %removes appendix from toc
 %\appendix %Starts the appendix
 %\renewcommand{\thesection}{Appendix \Alph{section}:}%
