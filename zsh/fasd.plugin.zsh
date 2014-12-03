@@ -19,6 +19,6 @@ function goto {
             echo "Nothing found"
         else
             echo $FILE 
-            cd `dirname $FILE`
+            cd "`dirname $FILE`"
         fi
    }
