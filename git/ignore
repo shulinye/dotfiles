@@ -1,6 +1,8 @@
 #Ignore secrets
 */sekrit
 */sekrit/*
+*sekrit/
+*sekrit
 
 #ignore pdflatex extra files
 *.aux
@@ -32,3 +34,9 @@
 
 #Ignore gpg
 *.gpg
+
+#Ignore tmpfiles
+*/tmp/*
+*/tmp*
+*tmp
+*tmp/
