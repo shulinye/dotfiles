@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 NOTESDIR="$HOME/Notes"
 JOURNALDIR="$HOME/Notes/Journal" #where is this zimwiki journal?
@@ -23,7 +23,7 @@ function movetasks(){
 if [ ! -f "$TODAY" ] ; then
 
 echo "Content-Type: text/x-zim-wiki
-Wiki-Format: zim 0.4
+Wiki-Format: $(zim --version | head -n1)
 Creation-Date: $(date +"%FT%T%:z")
 
 ====== $(date +"%A %d %b %Y") ======
@@ -32,10 +32,21 @@ Creation-Date: $(date +"%FT%T%:z")
 
 " > "$TODAY"
 
+echo -e "====FROM YESTERDAY====\n\n"
 movetasks "$YESTERDAY"
+if [ -f "$YESTERDAY" ] ; then
+    sed -i -e 's/\[ \] / \[x\]~~/' -e 's/~~.*$/&~~/' "$YESTERDAY"
+#Strike out yesterday's tasks.
+fi
+
+echo -e "====FROM TODO====\n\n"
 movetasks "$TODO"
+
+echo -e "====FROM DAILY====\n\n"
 movetasks "$DAILY"
+
 if [ $(date +%u) = $DoW ] ; then
+    echo -e "====FROM WEEKLY====\n\n"
     movetasks "$WEEKLY"
 fi
 
