@@ -36,7 +36,10 @@ echo -e "====FROM YESTERDAY====\n\n"
 movetasks "$YESTERDAY"
 if [ -f "$YESTERDAY" ] ; then
     sed -i -e 's/\[ \] / \[x\]~~/' -e 's/~~.*$/&~~/' "$YESTERDAY"
-#Strike out yesterday's tasks.
+    #Strike out yesterday's tasks.
+    cd "$JOURNALDIR"
+    git add "$YESTERDAY"
+    git commit "$YESTERDAY" -m "Moving tasks from $(date -d 'yesterday' +%F) over to $(date +%F)"
 fi
 
 echo -e "====FROM TODO====\n\n"
