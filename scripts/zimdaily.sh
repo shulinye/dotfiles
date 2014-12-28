@@ -22,15 +22,11 @@ function movetasks(){
 
 if [ ! -f "$TODAY" ] ; then
 
-echo "Content-Type: text/x-zim-wiki
+echo -e "Content-Type: text/x-zim-wiki
 Wiki-Format: $(zim --version | head -n1)
-Creation-Date: $(date +"%FT%T%:z")
-
-====== $(date +"%A %d %b %Y") ======
-
-=== Tasks ===
-
-" > "$TODAY"
+Creation-Date: $(date +"%FT%T%:z") \n
+====== $(date +"%A %d %b %Y") ====== \n
+=== Tasks === \n\n" > "$TODAY"
 
 echo -e "====FROM YESTERDAY====\n\n"
 movetasks "$YESTERDAY"
@@ -53,11 +49,9 @@ if [ $(date +%u) = $DoW ] ; then
     movetasks "$WEEKLY"
 fi
 
-echo "=== Tasks Completed ===
+echo -e "=== Tasks Completed === \n
+=== Diary === \n\n" >> "$TODAY"
 
-=== Diary ===
-
-" >> "$TODAY"
 cd "$DIR"
 git add "$TODAY"
 git commit "$TODAY" -m "Initial commit: $(date +%F)"
