@@ -16,7 +16,7 @@ function movetasks(){
     if [ -f "$1" ] ; then
         #Move incomplete tasks from one file to another
         grep "\[ \]" "$1" | grep -v "~~$" >> "$TODAY"
-        echo -e "\n" >> $TODAY
+        echo -e "\n\n" >> $TODAY
     fi
 }
 
@@ -31,7 +31,7 @@ Creation-Date: $(date +"%FT%T%:z") \n
 echo -e "====FROM YESTERDAY====\n\n"
 movetasks "$YESTERDAY"
 if [ -f "$YESTERDAY" ] ; then
-    sed -i -e 's/\[ \] / \[x\]~~/' -e 's/~~.*$/&~~/' "$YESTERDAY"
+    sed -i -e '/~~/!s/\[ \] / \[x\]~~/' -e '/~~.*~~/!s/~~.*$/&~~/' "$YESTERDAY"
     #Strike out yesterday's tasks.
     cd "$JOURNALDIR"
     git add "$YESTERDAY"
