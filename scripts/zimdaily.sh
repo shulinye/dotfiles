@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 NOTESDIR="$HOME/Notes"
 JOURNALDIR="$HOME/Notes/Journal" #where is this zimwiki journal?
@@ -28,7 +28,7 @@ Creation-Date: $(date +"%FT%T%:z") \n
 ====== $(date +"%A %d %b %Y") ====== \n
 === Tasks === \n\n" > "$TODAY"
 
-echo -e "====FROM YESTERDAY====\n\n"
+echo -e "====FROM YESTERDAY====\n\n" > "$TODAY"
 movetasks "$YESTERDAY"
 if [ -f "$YESTERDAY" ] ; then
     sed -i -e '/~~/!s/\[ \] / \[x\]~~/' -e '/~~.*~~/!s/~~.*$/&~~/' "$YESTERDAY"
@@ -38,10 +38,10 @@ if [ -f "$YESTERDAY" ] ; then
     git commit "$YESTERDAY" -m "Moving tasks from $(date -d 'yesterday' +%F) over to $(date +%F)"
 fi
 
-echo -e "====FROM TODO====\n\n"
+echo -e "====FROM TODO====\n\n" > "$TODAY"
 movetasks "$TODO"
 
-echo -e "====FROM DAILY====\n\n"
+echo -e "====FROM DAILY====\n\n" >"$TODAY"
 movetasks "$DAILY"
 
 if [ $(date +%u) = $DoW ] ; then
