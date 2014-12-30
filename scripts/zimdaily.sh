@@ -26,31 +26,32 @@ echo -e "Content-Type: text/x-zim-wiki
 Wiki-Format: $(zim --version | head -n1)
 Creation-Date: $(date +"%FT%T%:z") \n
 ====== $(date +"%A %d %b %Y") ====== \n
-=== Tasks === \n\n" > "$TODAY"
+@journal @diary \n
+==== Tasks ==== \n\n" > "$TODAY"
 
-echo -e "====FROM YESTERDAY====\n\n" > "$TODAY"
+echo -e "=== FROM YESTERDAY ===\n\n" >> "$TODAY"
 movetasks "$YESTERDAY"
 if [ -f "$YESTERDAY" ] ; then
-    sed -i -e '/~~/!s/\[ \] / \[x\]~~/' -e '/~~.*~~/!s/~~.*$/&~~/' "$YESTERDAY"
+    sed -i -e '/~~/!s/\[ \] /\[x\] ~~/' -e '/~~.*~~/!s/~~.*$/&~~/' "$YESTERDAY"
     #Strike out yesterday's tasks.
     cd "$JOURNALDIR"
     git add "$YESTERDAY"
     git commit "$YESTERDAY" -m "Moving tasks from $(date -d 'yesterday' +%F) over to $(date +%F)"
 fi
 
-echo -e "====FROM TODO====\n\n" > "$TODAY"
+echo -e "=== FROM TODO ===\n\n" >> "$TODAY"
 movetasks "$TODO"
 
-echo -e "====FROM DAILY====\n\n" >"$TODAY"
+echo -e "=== FROM DAILY ===\n\n" >> "$TODAY"
 movetasks "$DAILY"
 
 if [ $(date +%u) = $DoW ] ; then
-    echo -e "====FROM WEEKLY====\n\n"
+    echo -e "=== FROM WEEKLY ===\n\n"
     movetasks "$WEEKLY"
 fi
 
-echo -e "=== Tasks Completed === \n
-=== Diary === \n\n" >> "$TODAY"
+echo -e "==== Tasks Completed ==== \n
+==== Diary ==== \n\n" >> "$TODAY"
 
 cd "$DIR"
 git add "$TODAY"
