@@ -21,7 +21,16 @@ function auxpdflatex()
 function tasks()
 {
     TODAY="$HOME/Notes/Journal/$(date +%Y/%m/%d.txt)"
+    THISMONTH="$HOME/Notes/Journal/$(date +%Y/%m.txt)"
     if [ -f "$TODAY" ] ; then
-        grep '\[ \]' "$TODAY" | grep -v '~~$'
+        echo -e "${BOLD}Today's tasks${NONE}"
+        grep '\[ \]' "$TODAY" | grep -v '~~.*~~$'
+        echo -e "\n"
     fi
+
+    if [ -f "$THISMONTH" ] ; then
+        echo -e "${BOLD}This month's tasks${NONE}"
+        grep '\[ \]' "$THISMONTH" | grep -v '~~.*~~$'
+    fi
+       
 }

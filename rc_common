@@ -11,6 +11,10 @@ if [ -f ~/.bash_aliases ]; then
  . ~/.bash_aliases
 fi
 
+#bold
+NONE='\033[00m'
+BOLD='\033[1m'
+
 #Making common commands more awesome by default
 alias cp="cp -iv"
 alias mv="mv -iv"
