@@ -10,12 +10,12 @@ TODO="$NOTESDIR/1_-_to-Do.txt"
 DAILY="$NOTESDIR/1_-_to-Do/Daily_Tasks.txt"
 WEEKLY="$NOTESDIR/1_-_to-Do/Weekly_Tasks.txt"
 DoW=1 #Which day of the week do I want to have weekly tasks go to? 1 = Monday, 7 = Sunday (this uses $(date +%u))
-
+TAGS="@journal @diary"
 
 function movetasks(){
     if [ -f "$1" ] ; then
         #Move incomplete tasks from one file to another
-        grep "\[ \]" "$1" | grep -v "~~$" >> "$TODAY"
+        sed -ne '1,/===== Future? =====/{/===== Future? =====/!p}' "$1" | grep "\[ \]\|===\|^[\s]*$" | grep -v "~~.*~~$" >> "$TODAY"
         echo -e "\n\n" >> $TODAY
     fi
 }
@@ -26,7 +26,7 @@ echo -e "Content-Type: text/x-zim-wiki
 Wiki-Format: $(zim --version | head -n1)
 Creation-Date: $(date +"%FT%T%:z") \n
 ====== $(date +"%A %d %b %Y") ====== \n
-@journal @diary \n
+$TAGS \n
 ==== Tasks ==== \n\n" > "$TODAY"
 
 echo -e "=== FROM TODO ===\n\n" >> "$TODAY"
@@ -46,6 +46,7 @@ if [ -f "$YESTERDAY" ] ; then
     if [ "$(grep -c '\[ \]' "$YESTERDAY" )" -gt 0 ] ; then
         sed -i -e '/~~/!s/\[ \] /\[x\] ~~/' -e '/~~.*~~/!s/~~.*$/&~~/' "$YESTERDAY"
         #Strike out yesterday's tasks.
+        "$HOME/.dotfiles/scripts/dedupzim.py" < "$YESTERDAY" | sponge "$YESTERDAY" #little bit of cleanup
         cd "$JOURNALDIR"
         git add "$YESTERDAY"
         git commit "$YESTERDAY" -m "Moving tasks from $(date -d 'yesterday' +%F) over to $(date +%F)"
@@ -55,7 +56,7 @@ fi
 echo -e "==== Tasks Completed ==== \n
 ==== Diary ==== \n\n" >> "$TODAY"
 
-cat -s "$TODAY" | sponge "$TODAY"
+cat -s "$TODAY" | "$HOME/.dotfiles/scripts/dedupzim.py" | sponge "$TODAY" #This line gets rid of extraneous whitespace and duplicate lines
 
 cd "$DIR"
 git add "$TODAY"
