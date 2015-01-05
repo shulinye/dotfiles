@@ -1,6 +1,5 @@
 #Ignore secrets
-*/sekrit
-*/sekrit/*
+*sekrit/*
 *sekrit/
 *sekrit
 
@@ -40,3 +39,6 @@
 */tmp*
 *tmp
 *tmp/
+
+#Ignore .zim
+*\.zim/*
