@@ -3,7 +3,7 @@
 import sys
 
 tasks = set()
-done = []
+done = set()
 f = []
 
 def makeparagraphs(intake):
@@ -20,10 +20,11 @@ paragraphs = makeparagraphs(sys.stdin)
 
 for line in paragraphs:
     if "[ ]" in line:
-        if line not in tasks: f.append(line)
-        tasks.add(line)
+        if line not in tasks:
+            f.append(line)
+            tasks.add(line)
     elif "[*]" in line:
-        done.append(line)
+        done.add(line)
     elif "Tasks Completed" in line:
         break
     elif "" == line.strip():
@@ -32,7 +33,7 @@ for line in paragraphs:
 
 f.append("==== Tasks Completed ====\n")
 
-f += done
+f += list(done)
 
 for line in paragraphs: f.append(line)
 
