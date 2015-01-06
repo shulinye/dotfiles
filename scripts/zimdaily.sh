@@ -15,8 +15,10 @@ TAGS="@journal @diary"
 function movetasks(){
     if [ -f "$1" ] ; then
         #Move incomplete tasks from one file to another
-        sed -ne '6,/===== Future? =====\|Tasks Completed/{/===== Future? =====\|Tasks Completed/!p}' "$1" | sed -e 's/^==\(.*\)==$/=\1=/g' | grep "\[ \]\|===\|^[\s]*$" | grep -v "~~.*~~$" >> "$TODAY"
-            # Truncate file before Future or Tasks Completed. Start at line 6 to avoid top header | Reduce the priority of each header. | copy undone tasks and headers | remove things that are strck through
+        sed -ne '6,/===== Future? =====\|Tasks Completed/{/===== Future? =====\|Tasks Completed/!p}' "$1" \ # Truncate file before Future or Tasks Completed. Start at line 6 to avoid top header
+            | sed -e 's/^==\(.*\)==$/=\1=/g' \ #Reduce the priority of each header
+            | grep "\[ \]\|===\|^[\s]*$" \ #copy undone tasks and headers
+            | grep -v "~~.*~~$" >> "$TODAY" #remove things that are struck through
         echo -e "\n\n" >> $TODAY
     fi
 }
@@ -58,7 +60,9 @@ echo -e "==== Tasks Completed ==== \n
 ==== Diary ==== \n\n" >> "$TODAY"
 
 
-cat -s "$TODAY" | "$HOME/.dotfiles/scripts/dedupzim.py" | sponge "$TODAY" #This line gets rid of extraneous whitespace and duplicate lines
+cat -s "$TODAY" \ #Remove extraneous whitespace
+    | "$HOME/.dotfiles/scripts/dedupzim.py" \ #Remove duplicate lines
+    | sponge "$TODAY"
 
 cd "$DIR"
 git add "$TODAY"
