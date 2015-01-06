@@ -15,7 +15,8 @@ TAGS="@journal @diary"
 function movetasks(){
     if [ -f "$1" ] ; then
         #Move incomplete tasks from one file to another
-        sed -ne '1,/===== Future? =====/{/===== Future? =====/!p}' "$1" | grep "\[ \]\|===\|^[\s]*$" | grep -v "~~.*~~$" >> "$TODAY"
+        sed -ne '6,/===== Future? =====\|Tasks Completed/{/===== Future? =====\|Tasks Completed/!p}' "$1" | sed -e 's/^==\(.*\)==$/=\1=/g' | grep "\[ \]\|===\|^[\s]*$" | grep -v "~~.*~~$" >> "$TODAY"
+            # Truncate file before Future or Tasks Completed. Start at line 6 to avoid top header | Reduce the priority of each header. | copy undone tasks and headers | remove things that are strck through
         echo -e "\n\n" >> $TODAY
     fi
 }
@@ -55,6 +56,7 @@ fi
 
 echo -e "==== Tasks Completed ==== \n
 ==== Diary ==== \n\n" >> "$TODAY"
+
 
 cat -s "$TODAY" | "$HOME/.dotfiles/scripts/dedupzim.py" | sponge "$TODAY" #This line gets rid of extraneous whitespace and duplicate lines
 
