@@ -1,15 +1,7 @@
 #!/bin/bash
 
-NOTESDIR="$HOME/Notes"
-JOURNALDIR="$HOME/Notes/Journal" #where is this zimwiki journal?
-DIR="$JOURNALDIR/$(date +%Y/%m)"
-mkdir -p "$DIR"
-TODAY="$DIR/$(date +%d).txt"
-YESTERDAY="$JOURNALDIR/$(date -d 'yesterday' +%Y/%m/%d.txt)"
-TODO="$NOTESDIR/1_-_to-Do.txt"
-DAILY="$NOTESDIR/1_-_to-Do/Daily_Tasks.txt"
-WEEKLY="$NOTESDIR/1_-_to-Do/Weekly_Tasks.txt"
-DoW=1 #Which day of the week do I want to have weekly tasks go to? 1 = Monday, 7 = Sunday (this uses $(date +%u))
+source zimcommon.sh
+
 TAGS="@journal @diary"
 
 function movetasks(){
@@ -34,6 +26,8 @@ Wiki-Format: $(zim --version | head -n1)
 Creation-Date: $(date +"%FT%T%:z") \n
 ====== $(date +"%A %d %b %Y") ====== \n
 $TAGS \n
+==== Quote ==== \n
+$(fortune)\n
 ==== Tasks ==== \n\n" > "$TODAY"
 
 echo -e "=== FROM TODO ===\n\n" >> "$TODAY"
