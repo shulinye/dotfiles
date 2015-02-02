@@ -31,18 +31,18 @@ $(fortune)\n
 ==== Tasks ==== \n\n" > "$TODAY"
 
 echo -e "=== FROM TODO ===\n\n" >> "$TODAY"
-movetasks "$TODO"
+movetasks "$TODO" "$TODAY"
 
 echo -e "=== FROM DAILY ===\n\n" >> "$TODAY"
-movetasks "$DAILY"
+movetasks "$DAILY" "$TODAY"
 
 if [ $(date +%u) = $DoW ] ; then
     echo -e "=== FROM WEEKLY ===\n\n" >> "$TODAY"
-    movetasks "$WEEKLY"
+    movetasks "$WEEKLY" "$TODAY"
 fi
 
 echo -e "=== FROM YESTERDAY ===\n\n" >> "$TODAY"
-movetasks "$YESTERDAY"
+movetasks "$YESTERDAY" "$TODAY"
 if [ -f "$YESTERDAY" ] ; then
     if [ "$(grep -c '\[ \]' "$YESTERDAY" )" -gt 0 ] ; then
         sed -i -e '/~~/!s/\[ \] /\[x\] ~~/' -e '/~~.*~~/!s/~~.*$/&~~/' "$YESTERDAY"

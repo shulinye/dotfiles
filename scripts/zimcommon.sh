@@ -21,8 +21,8 @@ function movetasks(){
                 #Reduce the priority of each header
             grep "\[ \]\|===\|^[\s]*$" |\
                 #copy undone tasks and headers
-            grep -v "~~.*~~$" >> "$TODAY"
+            grep -v "~~.*~~$" >> "$2"
                 #remove things that are struck through
-        echo -e "\n\n" >> $TODAY
+        echo -e "\n\n" >> "$2"
     fi
 }
