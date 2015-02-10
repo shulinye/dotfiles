@@ -4,7 +4,7 @@ source zimcommon.sh
 
 THISMONTH="$DIR.txt"
 LASTMONTH="$JOURNALDIR/`date +'%Y/%m.txt' -d 'last month'`"
-
+TAGS="@Year$(date +%Y)"
 if [ ! -f "$THISMONTH" ] ; then
 
 echo -e "Content-Type: text/x-zim-wiki

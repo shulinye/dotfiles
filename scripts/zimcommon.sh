@@ -19,7 +19,7 @@ function movetasks(){
                 #Truncate file before Future or Tasks Completed. Start at line 6 to avoid top header
             sed -e 's/^==\(.*\)==$/=\1=/g' |\
                 #Reduce the priority of each header
-            grep "\[ \]\|===\|^[\s]*$" |\
+            grep "\[ \]\|==\|^[\s]*$" |\
                 #copy undone tasks and headers
             grep -v "~~.*~~$" >> "$2"
                 #remove things that are struck through

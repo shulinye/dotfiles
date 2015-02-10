@@ -2,22 +2,7 @@
 
 source zimcommon.sh
 
-TAGS="@journal @diary"
-
-function movetasks(){
-    if [ -f "$1" ] ; then
-        #Move incomplete tasks from one file to another
-        sed -ne '6,/===== Future? =====\|Tasks Completed/{/===== Future? =====\|Tasks Completed/!p}' "$1" |\
-                #Truncate file before Future or Tasks Completed. Start at line 6 to avoid top header
-            sed -e 's/^==\(.*\)==$/=\1=/g' |\
-                #Reduce the priority of each header
-            grep "\[ \]\|===\|^[\s]*$" |\
-                #copy undone tasks and headers
-            grep -v "~~.*~~$" >> "$TODAY"
-                #remove things that are struck through
-        echo -e "\n\n" >> $TODAY
-    fi
-}
+TAGS="@journal @diary @Year$(date +%Y)"
 
 if [ ! -f "$TODAY" ] ; then
 
@@ -25,6 +10,7 @@ echo -e "Content-Type: text/x-zim-wiki
 Wiki-Format: $(zim --version | head -n1)
 Creation-Date: $(date +"%FT%T%:z") \n
 ====== $(date +"%A %d %b %Y") ====== \n
+Week $(date +%V)\n
 $TAGS \n
 ==== Quote ==== \n
 $(fortune)\n
