@@ -4,6 +4,7 @@ source zimcommon.sh
 
 THISMONTH="$DIR.txt"
 LASTMONTH="$JOURNALDIR/`date +'%Y/%m.txt' -d 'last month'`"
+MONTHLY="$NOTESDIR/1_-_to-Do/Monthly_Tasks.txt"
 TAGS="@Year$(date +%Y)"
 if [ ! -f "$THISMONTH" ] ; then
 
@@ -19,6 +20,21 @@ $(fortune)\n
 
 echo -e "=== FROM LAST MONTH ($(date +'%B %Y' -d 'last month')) ===\n\n" >> "$THISMONTH"
 movetasks "$LASTMONTH" "$THISMONTH"
+
+if [ -f "$LASTMONTH" ] ; then
+    if [ "$(grep -c '\[ \]' "$LASTMONTH" )" -gt 0 ] ; then
+        sed -i -e '/~~/!s/\[ \] /\[x\] ~~/' -e '/~~.*~~/!s/~~.*$/&~~/' "$LASTMONTH"
+        #Strike out yesterday's tasks.
+        "$HOME/.dotfiles/scripts/dedupzim.py" < "$LASTMONTH" | sponge "$LASTMONTH" #little bit of cleanup
+        cd "$JOURNALDIR"
+        git add "$LASTMONTH"
+        git commit "$LASTMONTH" -m "Moving tasks from $(date -d 'last month' +%F) over to $(date +%F)"
+    fi
+fi
+
+
+echo -e "=== MONTHLY TASKS ===\n\n" >> "$THISMONTH"
+movetasks "$MONTHLY" "$THISMONTH"
 
 cd $DIR
 git add "$THISMONTH"
