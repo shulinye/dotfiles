@@ -30,7 +30,6 @@ function tasks()
 
     if [ -f "$THISMONTH" ] ; then
         echo -e "${BOLD}This month's tasks${NONE}"
-        grep '\[ \]' "$THISMONTH" | grep -v '~~.*~~$'
+        grep '\[ \]' "$THISMONTH" | grep -v '~~.*~~$' | grep -v 'Week [0-9]'
     fi
-       
 }

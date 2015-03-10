@@ -28,7 +28,7 @@ if [ -f "$LASTMONTH" ] ; then
         "$HOME/.dotfiles/scripts/dedupzim.py" < "$LASTMONTH" | sponge "$LASTMONTH" #little bit of cleanup
         cd "$JOURNALDIR"
         git add "$LASTMONTH"
-        git commit "$LASTMONTH" -m "Moving tasks from $(date -d 'last month' +%F) over to $(date +%F)"
+        git commit "$LASTMONTH" -m "Moving tasks from $(date -d 'last month' +'%B %Y') over to $(date +'%B %Y')"
     fi
 fi
 
