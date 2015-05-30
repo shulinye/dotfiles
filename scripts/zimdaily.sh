@@ -54,3 +54,5 @@ cd "$DIR"
 git add "$TODAY"
 git commit "$TODAY" -m "Initial commit: $(date +%F)"
 fi
+
+ln -sf "$TODAY" "/home/shulinye/Dropbox/todo/today"

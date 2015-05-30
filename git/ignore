@@ -41,4 +41,5 @@
 *tmp/
 
 #Ignore .zim
-*\.zim/*
+*.zim/*
+*Notes/.zim*

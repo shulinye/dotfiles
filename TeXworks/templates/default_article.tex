@@ -8,7 +8,7 @@
 \usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
 
 %%% PAGE DIMENSIONS
-\usepackage[letterpaper, margin=1cm]{geometry} % 'cause I'm a silly American who likes saving paper.
+\usepackage[letterpaper, margin=1.2cm]{geometry} % 'cause I'm a silly American who likes saving paper.
 
 \usepackage{graphicx} % support the \includegraphics command and options
 \usepackage[parfill]{parskip} % Begin paragraphs with an empty line rather than an indent
@@ -55,7 +55,7 @@
 % Custom commands
 \newcommand*\ruleline[2][1]{\par\noindent\raisebox{.8ex}{\makebox[#1\linewidth]{\hrulefill\hspace{1ex}\raisebox{-.8ex}{#2}\hspace{1ex}\hrulefill}}}
 \newcommand{\partialdev}[2][]{\frac{\partial #1}{\partial #2}} %partial derivatives
-\newcommand{\checked}[0]{\text{\rlap{$\checkmark$}}\square}
+\newcommand{\checked}[0]{\mbox{\mathsurround=0pt \makebox[0pt][l]{$\checkmark$}$\square$}}
 % For long documents
 %\numberwithin{equation}{section}
 %\numberwithin{figure}{section}

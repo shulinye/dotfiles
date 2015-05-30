@@ -67,7 +67,7 @@ alias update='sudo apt-get update'
 function upgrade()
 {
     sudo apt-get dist-upgrade
-    sudo python -c "import pip; import subprocess; [subprocess.call('pip install --upgrade ' + dist.project_name, shell=True) for dist in pip.get_installed_distributions()]"
+    python -c "import pip; import subprocess; [subprocess.call('pip install --upgrade ' + dist.project_name, shell=True) for dist in pip.get_installed_distributions()]"
 }
 alias clean='sudo apt-get autoclean && sudo apt-get autoremove'
 function canhaz()

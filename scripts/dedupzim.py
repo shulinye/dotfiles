@@ -11,7 +11,7 @@ divider = "Tasks Completed"
 class TaskItem(object):
     """A class for tasks that's nestable."""
     def __init__(self, task, *args):
-        self.task=task
+        self.task=task.strip('\n')
         self.subtasks=set(TaskItem(i) for i in args)
     def join(self, other):
         assert self.task == other.task
