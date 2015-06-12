@@ -43,3 +43,6 @@
 #Ignore .zim
 *.zim/*
 *Notes/.zim*
+
+#Ignore .pyc
+*.pyc

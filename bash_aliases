@@ -31,5 +31,15 @@ function tasks()
     if [ -f "$THISMONTH" ] ; then
         echo -e "${BOLD}This month's tasks${NONE}"
         grep '\[ \]' "$THISMONTH" | grep -v '~~.*~~$' | grep -v 'Week [0-9]'
+        echo -e "\n"
+    fi
+
+    wget -q --spider rememberthemilk.com
+
+    if [ $? -eq 0 ]; then
+        echo -e "${BOLD}RTM tasks${NONE}"
+        "$HOME/.dotfiles/scripts/zimrss.py" "rtm"
+    else
+        echo "Internet down, cannot check RTM"
     fi
 }
