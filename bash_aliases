@@ -36,12 +36,11 @@ function tasks()
 
 
     #RTM tasks - test the site first so I don't hang if, say, my internet is not working
-    wget -q --spider rememberthemilk.com
-    if [ $? -eq 0 ]; then
+    if wget -q --spider rememberthemilk.com ; then
         echo -e "${BOLD}RTM tasks${NONE}"
         "$HOME/.dotfiles/scripts/zimrss.py" "rtm"
     else
-        echo "Internet down, cannot check RTM. Using local mirror"
+        echo -e "${BOLD}Internet down, cannot check RTM. Using local mirror${NONE}"
         grep '\[ \]' "$HOME/Notes/1_-_to-Do/RTM-Mirror.txt" | grep -v '~~.*~~$'
     fi
 }
