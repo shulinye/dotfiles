@@ -34,8 +34,9 @@ function tasks()
         echo -e "\n"
     fi
 
-    wget -q --spider rememberthemilk.com
 
+    #RTM tasks - test the site first so I don't hang if, say, my internet is not working
+    wget -q --spider rememberthemilk.com
     if [ $? -eq 0 ]; then
         echo -e "${BOLD}RTM tasks${NONE}"
         "$HOME/.dotfiles/scripts/zimrss.py" "rtm"

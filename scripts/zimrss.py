@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import feedparser
+#Because these scripts require me to look at "secret" rss feeds, I've hidden them in an untracked directly called "sekrit"
 import sekrit.rss
 import sys
 import re
@@ -13,13 +14,13 @@ def goodreads(rss, prefix="[ ] "):
     print("Last edited: " + datetime.strftime(datetime.today(), "%A %d %B %Y") + '\n')
     print("%s books" % len(d.entries) + '\n')
     for i in d.entries:
-        print(prefix+"//%(title)s// by %(author_name)s" % i)
+        print(prefix+"//%(title)s// by %(author_name)s - %(link)s" % i)
 
 def rtm(rss, prefix="[ ] ", dateformat="%d %b %y"):
     d = feedparser.parse(rss)
     for i in d.entries:
         date = datetime.strptime(rtm_date.search(i.summary).groups('date')[0], "%a %d %b %y")
-        print(prefix+"**DUE "+date.strftime(dateformat)+"**: %(title)s" % i)
+        print(prefix+"**DUE "+date.strftime(dateformat)+"**: %(title)s - %(link)s" % i)
 
 if __name__ == "__main__":
     #print(sys.argv)
