@@ -41,6 +41,7 @@ function tasks()
         echo -e "${BOLD}RTM tasks${NONE}"
         "$HOME/.dotfiles/scripts/zimrss.py" "rtm"
     else
-        echo "Internet down, cannot check RTM"
+        echo "Internet down, cannot check RTM. Using local mirror"
+        grep '\[ \]' "$HOME/Notes/1_-_to-Do/RTM-Mirror.txt" | grep -v '~~.*~~$'
     fi
 }
