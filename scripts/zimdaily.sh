@@ -19,6 +19,10 @@ $(fortune)\n
 echo -e "=== FROM TODO ===\n\n" >> "$TODAY"
 movetasks "$TODO" "$TODAY"
 
+echo -e "=== RTM ===\n\n" >> "$TODAY"
+echo -e "$(head -n8 $RTMMIRROR) \n $(./zimrss.py "${@:2}")" | sponge "$RTMMIRROR"
+grep "$(date +'%d %b %y')" $RTMMIRROR >> "$TODAY"
+
 echo -e "=== FROM DAILY ===\n\n" >> "$TODAY"
 movetasks "$DAILY" "$TODAY"
 

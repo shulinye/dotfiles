@@ -11,6 +11,7 @@ DAILY="$NOTESDIR/1_-_to-Do/Daily_Tasks.txt"
 WEEKLY="$NOTESDIR/1_-_to-Do/Weekly_Tasks.txt"
 DoW=1 #Which day of the week do I want to have weekly tasks go to? 1 = Monday, 7 = Sunday (this uses $(date +%u))
 
+RTMMIRROR="$NOTESDIR/1_-_to-Do/RTM-Mirror.txt"
 
 function movetasks(){
     if [ -f "$1" ] ; then
