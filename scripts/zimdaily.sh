@@ -20,8 +20,14 @@ echo -e "=== FROM TODO ===\n\n" >> "$TODAY"
 movetasks "$TODO" "$TODAY"
 
 echo -e "=== RTM ===\n\n" >> "$TODAY"
-echo -e "$(head -n8 $RTMMIRROR) \n $(./zimrss.py "${@:2}")" | sponge "$RTMMIRROR"
-grep "$(date +'%d %b %y')" $RTMMIRROR >> "$TODAY"
+if wget -q --spider rememberthemilk.com; then
+    echo -e "$(head -n8 $RTMMIRROR) \n $(./zimrss.py "${@:2}")" | sponge "$RTMMIRROR"
+else
+    echo -e "Internet down, from mirror"
+fi
+if [ -f "$RTMMIRROR" ] ; then
+    grep "$(date +'%d %b %y')" $RTMMIRROR >> "$TODAY"
+fi
 
 echo -e "=== FROM DAILY ===\n\n" >> "$TODAY"
 movetasks "$DAILY" "$TODAY"
