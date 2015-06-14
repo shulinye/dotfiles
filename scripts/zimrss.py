@@ -28,9 +28,9 @@ def rtm(rss, prefix='[ ]', dateformat="%d %b %y", days=30):
     future = datetime.today() + timedelta(days)
     for i in d.entries:
         date = datetime.strptime(rtm_date.search(i.summary).groups('date')[0], "%a %d %b %y")
-        location = rtm_location.search(i.summary).groups('location')[0]
+        i["location"] = rtm_location.search(i.summary).groups('location')[0]
         if date <= future:
-            print(prefix+" **DUE "+date.strftime(dateformat)+"**: %(title)s @ " + location + " - %(link)s" % i)
+            print(prefix+" **DUE " + date.strftime(dateformat)+"**: %(title)s @ %(location)s- %(link)s" % i)
 
 if __name__ == "__main__":
     arguments = " ".join(sys.argv)
