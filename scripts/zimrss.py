@@ -43,6 +43,7 @@ if __name__ == "__main__":
 
     typeMatch = re_type.search(arguments)
     typeOption = functools.reduce(operator.add, [i.split(",") for i in typeMatch.groups('type')], []) if typeMatch else []
+    typeOption = [i.lower() for i in typeOption]
 
     daysMatch = re_days.search(arguments)
     days = int(daysMatch.groups('days')[0]) if daysMatch else 30
