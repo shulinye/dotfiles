@@ -23,14 +23,14 @@ function tasks()
     TODAY="$HOME/Notes/Journal/$(date +%Y/%m/%d.txt)"
     THISMONTH="$HOME/Notes/Journal/$(date +%Y/%m.txt)"
     if [ -f "$TODAY" ] ; then
-        echo -e "${BOLD}Today's tasks${NONE}"
+        echo -e "${BOLD}Today's tasks - $(date +'%d %b %y') ${NONE}"
         grep '\[ \]' "$TODAY" | grep -v '~~.*~~$'
         echo -e "\n"
     fi
 
     if [ -f "$THISMONTH" ] ; then
-        echo -e "${BOLD}This month's tasks${NONE}"
-        grep '\[ \]' "$THISMONTH" | grep -v '~~.*~~$' | grep -v 'Week [0-9]+'
+        echo -e "${BOLD}This month's tasks - $(date +'%b %Y')${NONE}"
+        grep '\[ \]' "$THISMONTH" | grep -v '~~.*~~$' | grep -v 'Week [0-9]\+'
         echo -e "\n"
     fi
 
