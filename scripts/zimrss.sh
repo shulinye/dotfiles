@@ -3,7 +3,7 @@
 . ./zimcommon.sh
 
 function replacezimfile() {
-    echo -e "$(head -n8 $1) \n $(./zimrss.py "${@:2}")" | sponge "$1"
+    echo -e "$(head -n7 $1) \n $(./zimrss.py "${@:2}")" | sponge "$1"
 }
 
 replacezimfile "$NOTESDIR/Book_recommendations/To-Read(Goodreads).txt" "goodreads" "type=to-read"
