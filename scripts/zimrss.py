@@ -12,6 +12,7 @@ import functools
 
 rtm_date = re.compile('<span class=\"rtm_due_value\">(?P<date>[a-zA-Z0-9\s]+)<')
 rtm_location = re.compile('<span class=\"rtm_location_value\">(?P<location>[a-zA-Z0-9\s]+)<')
+rtm_list = re.compile('<span class=\"rtm_list_value\">(?P<list>[a-zA-Z]+)<')
 re_prefix = re.compile('prefix=(?P<prefix>[^\s]+)')
 re_type = re.compile('type=(?P<type>[a-zA-Z0-9\_-]+)')
 re_days = re.compile('days=(?P<days>[0-9]+)')
@@ -28,12 +29,14 @@ def rtm(rss, prefix='[ ]', dateformat="%d %b %y", days=30):
     future = datetime.today() + timedelta(days)
     for i in d.entries:
         date = datetime.strptime(rtm_date.search(i.summary).groups('date')[0], "%a %d %b %y")
-        i["location"] = rtm_location.search(i.summary).groups('location')[0]
         if date <= future:
-            print(prefix+" **DUE " + date.strftime(dateformat)+"**: %(title)s @ %(location)s- %(link)s" % i)
+            i["location"] = rtm_location.search(i.summary).groups('location')[0]
+            listMatch = rtm_list.search(i.summary)
+            i["list"] = "(@"+listMatch.groups('list')[0]+")" if listMatch else ''
+            print(prefix+" **DUE " + date.strftime(dateformat)+"**: %(title)s @ %(location)s %(list)s- %(link)s" % i)
 
 if __name__ == "__main__":
-    arguments = " ".join(sys.argv)
+    arguments = "\n".join(sys.argv)
 
     prefixMatch = re_prefix.search(arguments)
     prefix = prefixMatch.groups('prefix')[0] if prefixMatch else '[ ]'
