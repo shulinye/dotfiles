@@ -14,7 +14,7 @@ rtm_date = re.compile('<span class=\"rtm_due_value\">(?P<date>[a-zA-Z0-9\s]+)<')
 rtm_location = re.compile('<span class=\"rtm_location_value\">(?P<location>[a-zA-Z0-9\s]+)<')
 rtm_list = re.compile('<span class=\"rtm_list_value\">(?P<list>[a-zA-Z]+)<')
 re_type = re.compile('type=(?P<type>[a-zA-Z0-9\_-]+)')
-re_flags = re.compile('^([\w]+)\=(.*)$', re.MULTILINE)
+re_flags = re.compile('^([\w-]+)\=(.*)$', re.MULTILINE|re.UNICODE)
 
 def goodreads(rss, **kwargs):
     arguments = {'prefix': '[ ]'
