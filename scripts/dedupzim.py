@@ -8,11 +8,12 @@ f = []
 
 divider = "Tasks Completed"
 
+
 class TaskItem(object):
     """A class for tasks that's nestable."""
     def __init__(self, task, *args):
-        self.task=task.strip('\n')
-        self.subtasks=set(TaskItem(i) for i in args)
+        self.task = task.strip('\n')
+        self.subtasks = set(TaskItem(i) for i in args)
     def join(self, other):
         assert self.task == other.task
         newTask = TaskItem(self.task)
@@ -42,8 +43,7 @@ def makeparagraphs(intake):
     for line in intake:
         if "\t" in line: out[-1] += line
         elif line.strip() =='': pass
-        else:
-            out.append(line)
+        else: out.append(line)
     return (i for i in out)
 
 paragraphs = makeparagraphs(sys.stdin)
