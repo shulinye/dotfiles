@@ -1,0 +1,26 @@
+#!/usr/bin/python3
+
+import sys
+
+from PyDictionary import PyDictionary
+dictionary = PyDictionary()
+
+class color:
+   PURPLE = '\033[95m'
+   CYAN = '\033[96m'
+   DARKCYAN = '\033[36m'
+   BLUE = '\033[94m'
+   GREEN = '\033[92m'
+   YELLOW = '\033[93m'
+   RED = '\033[91m'
+   BOLD = '\033[1m'
+   UNDERLINE = '\033[4m'
+   END = '\033[0m'
+
+for i in sys.argv[1:]:
+    d = dictionary.meaning(i)
+    print(color.BOLD + i + color.END)
+    for k in d:
+        print(color.GREEN + k + color.END)
+        print("\n".join(d[k]))
+    print("")
