@@ -32,10 +32,8 @@ def typecheck(obj, *args):
 def theShowMustGoOn(func = None, level = logging.DEBUG, prefix=""):
     """Decorator. Catches exceptions, writes them to log file."""
     if func is None: return partial(theShowMustGoOn, level=level, prefix=prefix)
-    sig = signature(func)
     @wraps(func)
     def decorated(*args, **kwargs):
-        sig.bind(*args, **kwargs) #Have the same signature as the original function?
         logging.log(level, prefix + "calling '%s'(%r,%r)", func.__qualname__, args, kwargs)
         try:
             ret = func(*args, **kwargs)
