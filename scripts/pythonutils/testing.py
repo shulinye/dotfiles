@@ -7,6 +7,7 @@ logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 from functools import wraps, partial
 from inspect import signature
+import types
 
 def sloppyRun(func, *args, **kwargs):
     """Runs a function, catching all exceptions
@@ -45,7 +46,7 @@ def theShowMustGoOn(func = None, level = logging.DEBUG, prefix=""):
             return ret
     if decorated.__doc__ : decorated.__doc__ += "\n Wrapped with theShowMustGoOn"
     else: decorated.__doc__ = "Wrapped with theShowMustGoOn"
-    decorated.sloppy = True
+    decorated.export_control = True
     return decorated
 
 def thisClassMustGoOn(cls = None, level = logging.DEBUG, prefix=""):
@@ -54,3 +55,18 @@ def thisClassMustGoOn(cls = None, level = logging.DEBUG, prefix=""):
         if callable(val):
             setattr(cls, key, theShowMustGoOn(val, level=level, prefix=prefix))
     return cls
+
+def limited_globals(func = None, *, allowed = None):
+    if func is None: return partial(limited_globals, allowed=allowed)
+    if allowed is None:
+        allowed = set('__builtins__')
+    else:
+        allowed = {i.__name__ for i in allowed}
+        allowed.add('__builtins__')
+    g = {k:v for k,v in func.__globals__.items() if k in allowed}
+    new_func = types.FunctionType(func.__code__, g, func.__name__, func.__defaults__, func.__closure__)
+    if new_func.__doc__: new_func.__doc__ += "\n Limited globals: " + ", ".join(allowed)
+    else: new_func.__doc__ = "Limited globals: " + ', '.join(allowed)
+    new_func.export_control = True
+    return new_func
+
