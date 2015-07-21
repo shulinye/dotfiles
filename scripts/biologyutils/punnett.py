@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import argparse
 import itertools
 import collections
 
@@ -13,6 +12,7 @@ def punnett(genepool1 : list, genepool2 : list) -> collections.Counter:
     return collections.Counter("".join("".join(i) for i in zip(*j)) for j in itertools.product(*parentals))
 
 if __name__ == "__main__":
+    import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('genepools', nargs=2, help="Genes. Like AaBb")
     args = parser.parse_args()
