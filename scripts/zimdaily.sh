@@ -26,13 +26,13 @@ else
     echo -e "Internet down, from mirror"
 fi
 if [ -f "$RTMMIRROR" ] ; then
-    grep "$(date +'%d %b %y')" $RTMMIRROR >> "$TODAY"
+    grep "$(date +'%d %b %y')" "$RTMMIRROR" >> "$TODAY"
 fi
 
 echo -e "=== FROM DAILY ===\n\n" >> "$TODAY"
 movetasks "$DAILY" "$TODAY"
 
-if [ $(date +%u) = $DoW ] ; then
+if [ "$(date +%u)" = "$DoW" ] ; then
     echo -e "=== FROM WEEKLY ===\n\n" >> "$TODAY"
     movetasks "$WEEKLY" "$TODAY"
 fi
@@ -44,8 +44,8 @@ if [ -f "$YESTERDAY" ] ; then
         sed -i -e '/~~/!s/\[ \] /\[x\] ~~/' -e '/~~.*~~/!s/~~.*$/&~~/' "$YESTERDAY"
         #Strike out yesterday's tasks.
         "$HOME/.dotfiles/scripts/dedupzim.py" < "$YESTERDAY" | sponge "$YESTERDAY" #little bit of cleanup
-        cd "$JOURNALDIR"
-        git add "$YESTERDAY"
+        cd "$JOURNALDIR" &&
+        git add "$YESTERDAY" &&
         git commit "$YESTERDAY" -m "Moving tasks from $(date -d 'yesterday' +%F) over to $(date +%F)"
     fi
 fi
@@ -60,7 +60,7 @@ cat -s "$TODAY" |\
         #Remove duplicate lines
     sponge "$TODAY"
 
-cd "$DIR"
+cd "$DIR" || exit
 git add "$TODAY"
 git commit "$TODAY" -m "Initial commit: $(date +%F)"
 fi
