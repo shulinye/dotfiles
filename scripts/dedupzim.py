@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import sys
-
+import fileinput
 tasks = set()
 done = set()
 f = []

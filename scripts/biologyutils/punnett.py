@@ -11,6 +11,14 @@ def punnett(genepool1 : list, genepool2 : list) -> collections.Counter:
     parentals = [sorted(itertools.product(*genepool1)), sorted(itertools.product(*genepool2))]
     return collections.Counter("".join("".join(i) for i in zip(*j)) for j in itertools.product(*parentals))
 
+def inbreed_f1(counter):
+    c = counter.most_common()
+    raise NotImplemented
+
+def recessive_f1(counter):
+    c = counter.most_common()
+    raise NotImplemented
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()

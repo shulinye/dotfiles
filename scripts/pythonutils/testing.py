@@ -5,7 +5,7 @@ import datetime
 LOG_FILENAME =  getattr(__main__,"__file__","unknown.").split('.')[0] + "." + datetime.datetime.now().isoformat() + ".log"
 logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
-from functools import wraps, partial
+from functools import wraps, update_wrapper, partial
 from inspect import signature
 import types
 
@@ -56,15 +56,16 @@ def thisClassMustGoOn(cls = None, level = logging.DEBUG, prefix=""):
             setattr(cls, key, theShowMustGoOn(val, level=level, prefix=prefix))
     return cls
 
-def limited_globals(func = None, *, allowed = None):
-    if func is None: return partial(limited_globals, allowed=allowed)
-    if allowed is None:
-        allowed = set('__builtins__')
+def limited_globals(func = None, *, allowed_modules = None):
+    if func is None: return partial(limited_globals, allowed_modules=allowed_modules)
+    if allowed_modules is None:
+        allowed_modules = set('__builtins__')
     else:
-        allowed = {i.__name__ for i in allowed}
+        allowed = {getattr(i,"__name__", None) for i in allowed}
         allowed.add('__builtins__')
     g = {k:v for k,v in func.__globals__.items() if k in allowed}
     new_func = types.FunctionType(func.__code__, g, func.__name__, func.__defaults__, func.__closure__)
+    update.wrapper(new_func, func)
     if new_func.__doc__: new_func.__doc__ += "\n Limited globals: " + ", ".join(allowed)
     else: new_func.__doc__ = "Limited globals: " + ', '.join(allowed)
     new_func.export_control = True
