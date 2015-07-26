@@ -1,21 +1,14 @@
 #!/usr/bin/python3
 
-import sys
-import fileinput
-tasks = set()
-done = set()
-f = []
-
-divider = "Tasks Completed"
-
+DIVIDER = "Tasks Completed"
 
 class TaskItem(object):
     """A class for tasks that's nestable."""
-    def __init__(self, task, *args):
-        self.task = task.strip('\n')
-        self.subtasks = set(TaskItem(i) for i in args)
+    def __init__(self, task, *tasks):
+        self.task = task.rstrip()
+        self.subtasks = set(TaskItem(i) for i in tasks if i != '')
     def join(self, other):
-        assert self.task == other.task
+        if self.task != other.task: raise ValueError
         newTask = TaskItem(self.task)
         newTask.subtasks = self.subtasks.symmetric_difference(other.subtasks)
         intersect = self.subtasks.intersection(other.subtasks)
@@ -28,9 +21,9 @@ class TaskItem(object):
                     newTask.subtasks.add(i.join(j))
         return newTask
     def display(self):
-        return "\n".join([self.task] + [str(i) for i in self.subtasks])
+        return "\n".join([self.task] + [str(i) for i in self.subtasks]) + '\n'
     def __repr__(self):
-        return self.task
+        return self.task.rstrip()
     def __lt__(self, other):
         return self.task < other.task
     def __eq__(self, other):
@@ -41,38 +34,44 @@ class TaskItem(object):
 def makeparagraphs(intake):
     out = []
     for line in intake:
-        if "\t" in line: out[-1] += line
-        elif line.strip() =='': pass
+        if line.strip() == '': continue
+        elif "\t" in line: out[-1] += line
         else: out.append(line)
     return (i for i in out)
 
-paragraphs = makeparagraphs(sys.stdin)
+def main(intake, divider = DIVIDER):
+    tasks = set()
+    done = set()
+    f = []
+    paragraphs = makeparagraphs(intake)
 
-for line in paragraphs:
-    if "[ ]" in line:
-        task = TaskItem(*line.split('\n'))
-        if task not in tasks:
-            f.append(task)
-            tasks.add(task)
-        else:
-            n = f.index(task)
-            f[n] = f[n].join(task)
-    elif "[*]" in line:
-        done.add(line)
-    elif divider in line:
-        break
-    elif "" == line.strip():
-        pass
-    else: f.append(TaskItem(line))
+    for line in paragraphs:
+        if "[ ]" in line:
+            task = TaskItem(*line.split('\n'))
+            if task not in tasks:
+                f.append(task)
+                tasks.add(task)
+            else:
+                n = f.index(task)
+                f[n] = f[n].join(task)
+        elif "[*]" in line:
+            done.add(line)
+        elif divider in line:
+            break
+        elif "" == line.strip():
+            pass
+        else: f.append(TaskItem(line))
 
-f.append("==== %s ====\n" % divider)
+    f.append("==== %s ====\n" % divider)
 
-f += list(done)
+    f += list(done)
 
-for line in paragraphs: f.append(line)
+    for line in paragraphs: f.append(line)
 
-for i in f:
-    if type(i) == TaskItem:
-        print(i.display())
-    else:
-        print(i)
+    for i in f:
+        if isinstance(i, TaskItem): print(i.display())
+        else: print(i)
+
+if __name__ == "__main__":
+    import fileinput
+    main(fileinput.input())
