@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+import sys
+
 DIVIDER = "Tasks Completed"
 
 class TaskItem(object):
@@ -21,7 +23,7 @@ class TaskItem(object):
                     newTask.subtasks.add(i.join(j))
         return newTask
     def display(self):
-        return "\n".join([self.task] + [str(i) for i in self.subtasks]) + '\n'
+        return "\n".join([self.task] + [str(i) for i in self.subtasks]) + '\n\n'
     def __repr__(self):
         return self.task.rstrip()
     def __lt__(self, other):
@@ -39,7 +41,7 @@ def makeparagraphs(intake):
         else: out.append(line)
     return (i for i in out)
 
-def main(intake, divider = DIVIDER):
+def main(intake = sys.stdin, output = sys.stdout, divider = DIVIDER,):
     tasks = set()
     done = set()
     f = []
@@ -69,9 +71,14 @@ def main(intake, divider = DIVIDER):
     for line in paragraphs: f.append(line)
 
     for i in f:
-        if isinstance(i, TaskItem): print(i.display())
-        else: print(i)
+        if isinstance(i, TaskItem): output.write(i.display())
+        else: output.write(i)
 
 if __name__ == "__main__":
-    import fileinput
-    main(fileinput.input())
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('infile', nargs='?', type=argparse.FileType('r'), default=sys.stdin)
+    parser.add_argument('-o', '--output', help='Output file. Default is stdout', type=argparse.FileType('w'), default=sys.stdout)
+    parser.add_argument('-d', '--divider', default=DIVIDER)
+    args = parser.parse_args()
+    main(intake=args.infile, output = args.output, divider=args.divider)
