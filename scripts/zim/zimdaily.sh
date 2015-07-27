@@ -53,12 +53,7 @@ fi
 echo -e "==== Tasks Completed ==== \n
 ==== Diary ==== \n\n" >> "$TODAY"
 
-
-cat -s "$TODAY" |\
-        #Remove extraneous whitespace
-    "$HOME/.dotfiles/scripts/dedupzim.py" |\
-        #Remove duplicate lines
-    sponge "$TODAY"
+"$HOME/.dotfiles/scripts/dedupzim.py" -i "$TODAY"
 
 cd "$DIR" || exit
 git add "$TODAY"

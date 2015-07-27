@@ -3,7 +3,7 @@
 source zimcommon.sh
 
 if [ -f "$TODAY" ]; then
-    ./dedupzim.py < "$TODAY" | sponge "$TODAY"
+    ./dedupzim.py -i "$TODAY"
 
     cd $DIR
     git add "$TODAY"
