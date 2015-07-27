@@ -52,9 +52,9 @@ class TaskItem(object):
         return hash(self.task)
 
     @staticmethod
-    def make_paragraphs(infile):
+    def make_paragraphs(intake):
         out = []
-        for line in infile:
+        for line in intake:
             if line.strip() == '':
                 continue
             elif '\t' in line:
@@ -111,7 +111,7 @@ def open_infile(infile_name=None):
         return open(infile_name)
 
 
-def open_outfile(infile_name=None, outfile_name=None, in_place=False):
+def open_outfile(outfile_name=None, in_place=False, infile_name=None):
     """Open output file. If in_place or output file same as input file,
     open tempfile instead. Elif no outfile, output to stdout."""
     if in_place or infile_name == outfile_name:
@@ -134,15 +134,15 @@ def main(infile_name=None, outfile_name=None, in_place=False, divider=DIVIDER):
             infile.close()
     out = make_tasks(paragraphs, divider)
     try:
-        outfile, tmppath = open_outfile(infile_name, outfile_name, in_place)
+        outfile, tmppath = open_outfile(outfile_name, in_place, infile_name)
         display_tasks(out, outfile)
+        if tmppath:
+            shutil.copy(tmppath, infile_name)
     finally:
         if "outfile" in locals() and outfile != sys.stdout:
             outfile.close()
+        if "tmppath" in locals() and tmppath:
             os.remove(tmppath)
-    if "tmppath" in locals() and tmppath:
-        shutil.copy(tmppath, infile_name)
-        os.remove(tmppath)
 
 
 if __name__ == '__main__':
