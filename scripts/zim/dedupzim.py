@@ -121,7 +121,7 @@ def open_outfile(outfile_name=None, in_place=False, infile_name=None):
     if outfile_name is None:
         outfile = sys.stdout
     else:
-        outfile = open(outfile_name)
+        outfile = open(outfile_name, "w")
     return outfile, None
 
 
@@ -136,6 +136,7 @@ def main(infile_name=None, outfile_name=None, in_place=False, divider=DIVIDER):
     try:
         outfile, tmppath = open_outfile(outfile_name, in_place, infile_name)
         display_tasks(out, outfile)
+        outfile.close()
         if tmppath:
             shutil.copy(tmppath, infile_name)
     finally:
@@ -143,7 +144,8 @@ def main(infile_name=None, outfile_name=None, in_place=False, divider=DIVIDER):
             outfile.close()
         if "tmppath" in locals() and tmppath:
             os.remove(tmppath)
-
+    if infile_name and outfile_name and outfile_name != infile_name:
+        shutil.copystat(infile_name, outfile_name)
 
 if __name__ == '__main__':
     import argparse
