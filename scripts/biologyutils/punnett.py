@@ -21,6 +21,8 @@ def inbreed_f1(counter):
     return output
 
 def recessive_f1(counter, recessive = None):
+    if recessive is None:
+        recessive = c.keys()[0].lower()
     output = collections.Counter()
     c = counter.most_common()
     for i in c:

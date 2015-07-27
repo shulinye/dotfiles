@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -9,9 +10,15 @@ DIVIDER = 'Tasks Completed'
 
 class TaskItem(object):
     """A class for tasks that's nestable."""
-    def __init__(self, task, *tasks):
-        self.task = task.rstrip()
-        self.subtasks = set(TaskItem(i) for i in tasks if i != '')
+    re_detab = re.compile(r'^\t')
+    def __init__(self, tasks_paragraph):
+        tasks = tasks_paragraph.split('\n')
+        self.task = tasks[0].rstrip()
+        if len(tasks) > 1:
+            paragraphs = self.make_paragraphs(self.re_detab.sub('', i) for i in tasks[1:])
+            self.subtasks = set(TaskItem(i) for i in paragraphs if i != '')
+        else:
+            self.subtasks = set()
     def join(self, other):
         if self.task != other.task: raise ValueError
         newTask = TaskItem(self.task)
@@ -26,7 +33,7 @@ class TaskItem(object):
                     newTask.subtasks.add(v.join(j))
         return newTask
     def display(self):
-        return "\n".join([self.task] + [i.display() for i in self.subtasks])
+        return "\n".join([self.task] + ['\t' + i.display() for i in self.subtasks])
     def __repr__(self):
         return self.task
     def __lt__(self, other):
@@ -36,16 +43,17 @@ class TaskItem(object):
     def __hash__(self):
         return hash(self.task)
 
-def make_paragraphs(infile):
-    out = []
-    for line in infile:
-        if line.strip() == '':
-            continue
-        elif '\t' in line:
-            out[-1] += line
-        else:
-            out.append(line)
-    return (i for i in out)
+    @staticmethod
+    def make_paragraphs(infile):
+        out = []
+        for line in infile:
+            if line.strip() == '':
+                continue
+            elif '\t' in line:
+                out[-1] += line
+            else:
+                out.append(line)
+        return (i for i in out)
 
 def make_tasks(paragraphs, divider = DIVIDER):
     tasks = set()
@@ -56,7 +64,7 @@ def make_tasks(paragraphs, divider = DIVIDER):
         if '' == line.strip():
             continue
         elif '[ ]' in line:
-            task = TaskItem(*line.split('\n'))
+            task = TaskItem(line)
             if task not in tasks:
                 out.append(task)
                 tasks.add(task)
@@ -81,29 +89,38 @@ def display_tasks(out, outfile = sys.stdout):
         else:
             outfile.write(i + '\n')
 
-def open_files(infile_name=None, outfile_name=None, in_place = False):
+def open_infile(infile_name=None):
     if infile_name is None:
-        infile = sys.stdin
+        return sys.stdin
     else:
-        infile = open(infile_name)
+        return open(infile_name)
 
+def open_outfile(infile_name=None, outfile_name=None, in_place = False):
     if in_place or infile_name == outfile_name:
         outfile = tempfile.NamedTemporaryFile(mode='w+t', delete=False)
         path = outfile.name
-        return infile, outfile, path
+        return outfile, path
     if outfile_name is None:
         outfile = sys.stdout
     else:
         outfile = open(outfile_name)
-    return infile, outfile, None
+    return outfile, None
 
 def main(infile_name = None, outfile_name = None, in_place = False, divider = DIVIDER):
-    infile, outfile, tmppath = open_files(infile_name, outfile_name, in_place)
-    paragraphs = make_paragraphs(infile)
+    try:
+        infile = open_infile(infile_name)
+        paragraphs = TaskItem.make_paragraphs(infile)
+    finally:
+        if infile != sys.stdin:
+            infile.close()
     out = make_tasks(paragraphs, divider)
-    display_tasks(out, outfile)
+    try:
+        outfile, tmppath = open_outfile(infile_name, outfile_name, in_place)
+        display_tasks(out, outfile)
+    finally:
+        if outfile != sys.stdout:
+            outfile.close()
     if tmppath:
-        outfile.close()
         shutil.copy(tmppath, infile_name)
         os.remove(tmppath)
 
