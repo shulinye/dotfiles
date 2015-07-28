@@ -59,20 +59,29 @@ class TaskItem(object):
             if line.strip() == '':
                 continue
             elif '\t' in line:
-                out[-1].append(line)
+                out[-1].append(line.rstrip())
             else:
-                out.append([line])
+                out.append([line.rstrip()])
         return (tuple(i) for i in out)
 
 
 def make_tasks(paragraphs, divider=DIVIDER):
     tasks = set()
     done = set()
+    titles = set()
     out = []
 
     for line in paragraphs:
-        if line == ['']:
+        if line == ('',):
             continue
+        elif len(line) == 1 and line[0].startswith('=') and line[0].endswith('='):
+            if divider in line[0]: break
+            stripped_title = line[0].strip('=')
+            if stripped_title in titles:
+                continue
+            else:
+                out.append(('\n' + line[0] + '\n',))
+                titles.add(stripped_title)
         elif any('[ ]' in i for i in line):
             task = TaskItem(line)
             if task not in tasks:
@@ -88,7 +97,7 @@ def make_tasks(paragraphs, divider=DIVIDER):
         else:
             out.append([i.rstrip() for i in line])
 
-    out.append(['==== %s ====\n' % divider])
+    out.append(['==== %s ====' % divider])
     out += list(done)
     for line in paragraphs:
         out.append(line)

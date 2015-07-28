@@ -32,6 +32,7 @@ class outfile(object):
             self.path = None
         return self.f
     def __exit__(self, etype, value, traceback):
+        # If got no errors...
         if etype is None and self.path:
             self.f.flush()
             shutil.copy(self.path, self.infile_name)
