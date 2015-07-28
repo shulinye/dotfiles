@@ -37,7 +37,7 @@ class TaskItem(object):
         return newTask
 
     def display(self):
-        return "\n".join([self.task] + ['\t' + i.display() for i in self.subtasks])
+        return "\n".join([self.task] + ['\t' + i.display() for i in sorted(self.subtasks)])
 
     def __repr__(self):
         return self.task
@@ -111,7 +111,7 @@ def open_infile(infile_name=None):
         return open(infile_name)
 
 
-def open_outfile(outfile_name=None, in_place=False, infile_name=None):
+def open_outfile(outfile_name=None, *, in_place=False, infile_name=None):
     """Open output file. If in_place or output file same as input file,
     open tempfile instead. Elif no outfile, output to stdout."""
     if in_place or infile_name == outfile_name:
@@ -126,23 +126,23 @@ def open_outfile(outfile_name=None, in_place=False, infile_name=None):
 
 
 def main(infile_name=None, outfile_name=None, in_place=False, divider=DIVIDER):
+    infile = open_infile(infile_name)
     try:
-        infile = open_infile(infile_name)
         paragraphs = TaskItem.make_paragraphs(infile)
     finally:
-        if "infile" in locals() and infile != sys.stdin:
+        if infile != sys.stdin:
             infile.close()
     out = make_tasks(paragraphs, divider)
+    outfile, tmppath = open_outfile(outfile_name, in_place = in_place, infile_name = infile_name)
     try:
-        outfile, tmppath = open_outfile(outfile_name, in_place, infile_name)
         display_tasks(out, outfile)
-        outfile.close()
         if tmppath:
+            outfile.flush() #or else we get a truncated file
             shutil.copy(tmppath, infile_name)
     finally:
-        if "outfile" in locals() and outfile != sys.stdout:
+        if outfile != sys.stdout:
             outfile.close()
-        if "tmppath" in locals() and tmppath:
+        if tmppath:
             os.remove(tmppath)
     if infile_name and outfile_name and outfile_name != infile_name:
         shutil.copystat(infile_name, outfile_name)
@@ -150,9 +150,9 @@ def main(infile_name=None, outfile_name=None, in_place=False, divider=DIVIDER):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs='?', type=str, default=None)
-    parser.add_argument('outfile', nargs='?', type=str, default=None)
-    parser.add_argument('-i', '--in-place', help='Output file. Default is stdout', action="store_true")
+    parser.add_argument('infile', nargs='?', type=str, default=None, help='Input file. Default is stdin')
+    parser.add_argument('outfile', nargs='?', type=str, default=None, help='Output file. Default is stdout')
+    parser.add_argument('-i', '--in-place', action="store_true", help="modify file in-place")
     parser.add_argument('-d', '--divider', default=DIVIDER)
     args = parser.parse_args()
     main(infile_name=args.infile, outfile_name=args.outfile, in_place=args.in_place, divider=args.divider)

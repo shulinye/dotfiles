@@ -43,7 +43,7 @@ if [ -f "$YESTERDAY" ] ; then
     if [ "$(grep -c '\[ \]' "$YESTERDAY" )" -gt 0 ] ; then
         sed -i -e '/~~/!s/\[ \] /\[x\] ~~/' -e '/~~.*~~/!s/~~.*$/&~~/' "$YESTERDAY"
         #Strike out yesterday's tasks.
-        "./dedupzim.py" < "$YESTERDAY" | sponge "$YESTERDAY" #little bit of cleanup
+        "./dedupzim.py" -i "$YESTERDAY" #little bit of cleanup
         cd "$JOURNALDIR" &&
         git add "$YESTERDAY" &&
         git commit "$YESTERDAY" -m "Moving tasks from $(date -d 'yesterday' +%F) over to $(date +%F)"
@@ -53,7 +53,7 @@ fi
 echo -e "==== Tasks Completed ==== \n
 ==== Diary ==== \n\n" >> "$TODAY"
 
-"$HOME/.dotfiles/scripts/dedupzim.py" -i "$TODAY"
+"./dedupzim.py" -i "$TODAY"
 
 cd "$DIR" || exit
 git add "$TODAY"
