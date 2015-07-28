@@ -46,6 +46,7 @@ class TaskItem(object):
         return self.task < other.task
 
     def __eq__(self, other):
+        if not isinstance(other, TaskItem): return False
         return self.task == other.task
 
     def __hash__(self):
@@ -79,7 +80,7 @@ def make_tasks(paragraphs, divider=DIVIDER):
                 tasks.add(task)
             else:
                 n = out.index(task)
-                out[n] = output[n].join(task)
+                out[n] = out[n].join(task)
         elif any('[*]' in i for i in line):
             done.add(line)
         elif any(divider in i for i in line):
@@ -114,7 +115,7 @@ def open_infile(infile_name=None):
 def open_outfile(outfile_name=None, *, in_place=False, infile_name=None):
     """Open output file. If in_place or output file same as input file,
     open tempfile instead. Elif no outfile, output to stdout."""
-    if in_place or infile_name == outfile_name:
+    if in_place or (outfile_name and infile_name == outfile_name):
         outfile = tempfile.NamedTemporaryFile(mode='w+t', delete=False)
         path = outfile.name
         return outfile, path
@@ -130,7 +131,7 @@ def main(infile_name=None, outfile_name=None, in_place=False, divider=DIVIDER):
     try:
         paragraphs = TaskItem.make_paragraphs(infile)
     finally:
-        if infile != sys.stdin:
+        if infile is not sys.stdin:
             infile.close()
     out = make_tasks(paragraphs, divider)
     outfile, tmppath = open_outfile(outfile_name, in_place = in_place, infile_name = infile_name)
@@ -140,7 +141,7 @@ def main(infile_name=None, outfile_name=None, in_place=False, divider=DIVIDER):
             outfile.flush() #or else we get a truncated file
             shutil.copy(tmppath, infile_name)
     finally:
-        if outfile != sys.stdout:
+        if outfile is not sys.stdout:
             outfile.close()
         if tmppath:
             os.remove(tmppath)
