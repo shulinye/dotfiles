@@ -13,7 +13,7 @@ class TaskItem(object):
     """A class for tasks that's nestable."""
     re_detab = re.compile(r'^\t')
 
-    def __init__(self, tasks):
+    def __init__(self, tasks : list):
         self.task = tasks[0].rstrip()
         if len(tasks) > 1:
             paragraphs = self.make_paragraphs(self.re_detab.sub('', i) for i in tasks[1:])
@@ -21,7 +21,8 @@ class TaskItem(object):
         else:
             self.subtasks = set()
 
-    def join(self, other):
+    def join(self, other : "TaskItem") -> "TaskItem":
+        """Merges two TaskItems that have the same self.task"""
         if self.task != other.task:
             raise ValueError
         newTask = TaskItem(self.task)
@@ -36,17 +37,20 @@ class TaskItem(object):
                     newTask.subtasks.add(v.join(j))
         return newTask
 
-    def display(self):
+    def display(self) -> str:
         return "\n".join([self.task] + ['\t' + i.display() for i in sorted(self.subtasks)])
+        # Note: sorting so numbered tasks make sense, also so comments sort above tasks.
+        # Conveniently for me, '*' < '['
 
     def __repr__(self):
-        return self.task
+        return "TaskItem(%s)" % self.task
 
     def __lt__(self, other):
         return self.task < other.task
 
     def __eq__(self, other):
-        if not isinstance(other, TaskItem): return False
+        if not isinstance(other, TaskItem):
+            return False
         return self.task == other.task
 
     def __hash__(self):
@@ -80,7 +84,7 @@ def make_tasks(paragraphs, divider=DIVIDER):
             if stripped_title in titles:
                 continue
             else:
-                out.append(('\n' + line[0] + '\n',))
+                out.append(('\n' + line[0],)) #restore a title's whitespace
                 titles.add(stripped_title)
         elif any('[ ]' in i for i in line):
             task = TaskItem(line)
@@ -107,7 +111,7 @@ def make_tasks(paragraphs, divider=DIVIDER):
 def display_tasks(out, outfile=sys.stdout):
     for i in out:
         if isinstance(i, TaskItem):
-            outfile.write(i.display() + '\n\n')
+            outfile.write(i.display() + '\n')
         else:
             outfile.write("\n".join(i) + '\n')
 
