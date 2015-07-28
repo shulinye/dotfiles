@@ -164,8 +164,8 @@ def main(infile_name=None, outfile_name=None, in_place=False, divider=DIVIDER):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs='?', type=str, default=None, help='Input file. Default is stdin')
-    parser.add_argument('outfile', nargs='?', type=str, default=None, help='Output file. Default is stdout')
+    parser.add_argument('infile', nargs='?', default=None, help='Input file. Default is stdin')
+    parser.add_argument('outfile', nargs='?', default=None, help='Output file. Default is stdout')
     parser.add_argument('-i', '--in-place', action="store_true", help="modify file in-place")
     parser.add_argument('-d', '--divider', default=DIVIDER)
     args = parser.parse_args()

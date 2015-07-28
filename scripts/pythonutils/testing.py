@@ -61,7 +61,7 @@ def limited_globals(func = None, *, allowed_modules = None):
     if allowed_modules is None:
         allowed_modules = set('__builtins__')
     else:
-        allowed = {getattr(i,"__name__", None) for i in allowed}
+        allowed = {getattr(i,"__name__", i) for i in allowed}
         allowed.add('__builtins__')
     g = {k:v for k,v in func.__globals__.items() if k in allowed}
     new_func = types.FunctionType(func.__code__, g, func.__name__, func.__defaults__, func.__closure__)
