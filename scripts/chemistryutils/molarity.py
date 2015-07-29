@@ -3,8 +3,10 @@
 from enum import Enum
 
 class Conversions(Enum):
+    k = 10**3
     m = 10**(-3)
     u = 10**(-6)
+    micro = 10**(-6)
 
 class Chemicals(Enum):
     silver_nitrate = 169.87
