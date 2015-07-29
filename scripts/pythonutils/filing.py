@@ -6,12 +6,13 @@ import sys
 import tempfile
 
 class infile(object):
-    def __init__(self, file_name=None):
-        self.file_name = file_name
-    def __enter__(self):
-        if self.file_name is None:
+    def __init__(self, *file_names, require_input=False):
+        self.file_names = file_names
+        if require_input and not  self.file_name:
             if sys.stdin.isatty():
                 raise RuntimeError("Input Expected")
+    def __enter__(self):
+        if self.file_name is None:
             self.f = sys.stdin
         else:
             self.f = open(self.file_name)
@@ -27,8 +28,8 @@ class outfile(object):
         self.noclobber = noclobber
         if self.noclobber and file_name and infile_name == file_name:
             raise RuntimeError("That makes no sense.")
-        while os.path.exists(file_name):
-            file_name = input("Sorry, that file already exists. Try again? ")
+        if os.path.exists(file_name):
+            raise RuntimeError("Sorry, file already exists.")
         if file_name and infile_name == file_name:
             self.with_temp = True
         else:

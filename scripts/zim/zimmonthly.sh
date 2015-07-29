@@ -25,7 +25,7 @@ if [ -f "$LASTMONTH" ] ; then
     if [ "$(grep -c '\[ \]' "$LASTMONTH" )" -gt 0 ] ; then
         sed -i -e '/~~/!s/\[ \] /\[x\] ~~/' -e '/~~.*~~/!s/~~.*$/&~~/' "$LASTMONTH"
         #Strike out yesterday's tasks.
-        "$HOME/.dotfiles/scripts/dedupzim.py" < "$LASTMONTH" | sponge "$LASTMONTH" #little bit of cleanup
+        "$HOME/.dotfiles/scripts/zim/dedupzim.py" -i "$LASTMONTH" #little bit of cleanup
         cd "$JOURNALDIR"
         git add "$LASTMONTH"
         git commit "$LASTMONTH" -m "Moving tasks from $(date -d 'last month' +'%B %Y') over to $(date +'%B %Y')"
@@ -35,6 +35,8 @@ fi
 
 echo -e "=== MONTHLY TASKS ===\n\n" >> "$THISMONTH"
 movetasks "$MONTHLY" "$THISMONTH"
+
+"$HOME/.dotfiles/scripts/zim/dedupzim.py" -i "$THISMONTH"
 
 cd $DIR
 git add "$THISMONTH"

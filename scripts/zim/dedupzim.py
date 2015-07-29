@@ -15,12 +15,11 @@ class TaskItem(object):
 
     def __init__(self, tasks : tuple):
         self.task = tasks[0].rstrip()
-        self.subtasks = set()
         if len(tasks) > 1:
-            dedented = [self.re_detab.sub('', i) for i in tasks[1:]]
             paragraphs = self.make_paragraphs(self.re_detab.sub('', i) for i in tasks[1:])
-            for i in paragraphs:
-                self.subtasks.add(TaskItem(i))
+            self.subtasks = {TaskItem(i) for i in paragraphs if i != ('',)}
+        else:
+            self.subtasks = set()
 
     def join(self, other : "TaskItem") -> "TaskItem":
         """Merges two TaskItems that have the same self.task"""
