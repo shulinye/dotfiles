@@ -9,14 +9,18 @@ def punnettParse(s : str) -> list:
 def punnett(genepool1 : list, genepool2 : list) -> collections.Counter:
     if len(genepool1) != len(genepool2): raise ValueError("Genepools must be same length")
     parentals = [sorted(itertools.product(*genepool1)), sorted(itertools.product(*genepool2))]
-    return collections.Counter("".join(sorted("".join(i) for i in sorted(zip(*j)))) for j in itertools.product(*parentals))
+    genes = (zip(*j) for j in itertools.product(*parentals))
+    c = collections.Counter("".join("".join(sorted(j, reverse=True)) for j in i) for i in genes)
+    normalize = sum(c.values())
+    for i in c: c[i] /= normalize
+    return c
 
 def inbreed_f1(counter):
     c = counter.most_common()
     output = collections.Counter()
     for i, j in itertools.product(c,c):
         offspring = punnett(*map(punnettParse, [i[0], j[0]]))
-        for kid in offspring: offspring[kid] *= i[1]*j[1]/256
+        for kid in offspring: offspring[kid] *= i[1]*j[1]
         output += offspring
     return output
 
@@ -25,9 +29,10 @@ def recessive_f1(counter, recessive = None):
         recessive = c.keys()[0].lower()
     output = collections.Counter()
     c = counter.most_common()
+    normalize = sum(counter.values())
     for i in c:
         offspring = punnett(*map(punnettParse, [i[0], recessive]))
-        for kid in offspring: offspring[kid] *= i[1]/16
+        for kid in offspring: offspring[kid] *= i[1]
         output += offspring
     return output
 

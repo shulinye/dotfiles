@@ -1,8 +1,10 @@
 #!/usr/bin/python3
 
 from enum import Enum
+import re
 
 class Conversions(Enum):
+    re_format = re.compile(r'\d+\s*([a-z]+)')
     k = 10**3
     m = 10**(-3)
     u = 10**(-6)
