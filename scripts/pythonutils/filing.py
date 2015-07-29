@@ -5,10 +5,10 @@ import shutil
 import sys
 import tempfile
 
-class infile(object):
-    def __init__(self, *file_names, require_input=False):
-        self.file_names = file_names
-        if require_input and not  self.file_name:
+class infile_simple(object):
+    def __init__(self, file_name = None, require_input=False):
+        self.file_name = file_name
+        if require_input and self.file_name is None:
             if sys.stdin.isatty():
                 raise RuntimeError("Input Expected")
     def __enter__(self):
