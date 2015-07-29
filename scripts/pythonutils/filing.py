@@ -10,6 +10,8 @@ class infile(object):
         self.file_name = file_name
     def __enter__(self):
         if self.file_name is None:
+            if sys.stdin.isatty():
+                raise RuntimeError("Input Expected")
             self.f = sys.stdin
         else:
             self.f = open(self.file_name)
@@ -21,12 +23,23 @@ class infile(object):
         return getattr(self.f, val) # pass on other attributes to the underlying filelike object
 
 class outfile(object):
-    def __init__(self, file_name=None, *, infile_name=None, inplace=False):
-        self.file_name = file_name
+    def __init__(self, file_name=None, *, infile_name=None, with_temp=False, noclobber=False):
+        self.noclobber = noclobber
+        if self.noclobber and file_name and infile_name == file_name:
+            raise RuntimeError("That makes no sense.")
+        while os.path.exists(file_name):
+            file_name = input("Sorry, that file already exists. Try again? ")
+        if file_name and infile_name == file_name:
+            self.with_temp = True
+        else:
+            self.with_temp = with_temp
+        if with_temp and file_name is None and infile_name is not None:
+            self.file_name = infile_name
+        else:
+            self.file_name = file_name
         self.infile_name = infile_name
-        self.inplace = inplace
     def __enter__(self):
-        if self.inplace or (self.file_name and self.file_name == self.infile_name):
+        if self.with_temp:
             self.f = tempfile.NamedTemporaryFile(mode='w+t', delete=False)
             self.tmppath = self.f.name
         elif self.file_name is None:
@@ -37,10 +50,10 @@ class outfile(object):
             self.tmppath = None
         return self.f
     def __exit__(self, etype, value, traceback):
-        # If got no errors...
         if etype is None and self.tmppath:
+            # If I got no errors, go ahead and copy
             self.f.flush()
-            shutil.copy(self.tmppath, self.infile_name)
+            shutil.copyfile(self.tmppath, self.file_name)
         if self.f is not sys.stdout:
             self.f.close()
         if self.path:

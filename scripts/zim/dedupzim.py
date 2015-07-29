@@ -13,19 +13,20 @@ class TaskItem(object):
     """A class for tasks that's nestable."""
     re_detab = re.compile(r'^\t')
 
-    def __init__(self, tasks : list):
+    def __init__(self, tasks : tuple):
         self.task = tasks[0].rstrip()
+        self.subtasks = set()
         if len(tasks) > 1:
+            dedented = [self.re_detab.sub('', i) for i in tasks[1:]]
             paragraphs = self.make_paragraphs(self.re_detab.sub('', i) for i in tasks[1:])
-            self.subtasks = set(TaskItem(i) for i in paragraphs if i != [''])
-        else:
-            self.subtasks = set()
+            for i in paragraphs:
+                self.subtasks.add(TaskItem(i))
 
     def join(self, other : "TaskItem") -> "TaskItem":
         """Merges two TaskItems that have the same self.task"""
         if self.task != other.task:
             raise ValueError
-        newTask = TaskItem(self.task)
+        newTask = TaskItem((self.task,))
         newTask.subtasks = self.subtasks.symmetric_difference(other.subtasks)
         intersect = self.subtasks.intersection(other.subtasks)
         if intersect:
@@ -140,12 +141,8 @@ def open_outfile(outfile_name=None, *, in_place=False, infile_name=None):
 
 
 def main(infile_name=None, outfile_name=None, in_place=False, divider=DIVIDER):
-    infile = open_infile(infile_name)
-    try:
+    with open_infile(infile_name) as infile:
         paragraphs = TaskItem.make_paragraphs(infile)
-    finally:
-        if infile is not sys.stdin:
-            infile.close()
     out = make_tasks(paragraphs, divider)
     outfile, tmppath = open_outfile(outfile_name, in_place = in_place, infile_name = infile_name)
     try:

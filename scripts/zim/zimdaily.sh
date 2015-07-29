@@ -53,7 +53,7 @@ fi
 echo -e "==== Tasks Completed ==== \n
 ==== Diary ==== \n\n" >> "$TODAY"
 
-"./dedupzim.py" -i "$TODAY"
+"$HOME/.dotfiles/scripts/zim/dedupzim.py" -i "$TODAY"
 
 cd "$DIR" || exit
 git add "$TODAY"
