@@ -1,0 +1,3 @@
+silver nitrate = 169.87
+ascorbic acid = 176.12
+sodium borohydride = 37.83
