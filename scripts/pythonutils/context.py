@@ -4,7 +4,8 @@ import os
 import sys
 
 class RedirectStreams(object):
-    def __init__(self, *, stdout=None, stderr = None):
+    def __init__(self, *, stdout=None, stderr = None, noclobber=False, use_temp=False):
+        #Insert proper validation here
         self.stdout = stdout
         self.stderr = stderr
     def __enter__(self):
@@ -16,3 +17,5 @@ class RedirectStreams(object):
         sys.stdout.flush() ; sys.stderr.flush()
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
+    def __repr__(self):
+        return "%s(stdout=%s, stderr=%s)" % (self.__class__.__qualname__, str(self.stdout), str(self.stderr))

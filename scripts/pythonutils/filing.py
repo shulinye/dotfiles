@@ -23,6 +23,8 @@ class infile_simple(object):
             self.f.close()
     def __getattr__(self, val):
         return getattr(self.f, val) # pass on other attributes to the underlying filelike object
+    def __repr__(self):
+        return "%s(%s)" % (self.__class__.__name__, str(self.file_name))
 
 class outfile(object):
     def __init__(self, file_name=None, *, infile_name=None, with_temp=False, noclobber=False):
@@ -62,6 +64,9 @@ class outfile(object):
             os.remove(self.tmppath)
     def __getattr__(self, val):
         return getattr(self.f, val)
+    def __repr__(self):
+        return "%s(%s)" % (self.__class__.__name__, str(self.file_name))
 
 class MyParser(argparse.ArgumentParser): #uh, rename this?
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__(*args, **kwargs)
