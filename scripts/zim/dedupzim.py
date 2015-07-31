@@ -13,19 +13,19 @@ class TaskItem(object):
     """A class for tasks that's nestable."""
     re_detab = re.compile(r'^\t')
 
-    def __init__(self, tasks : tuple):
-        self.task = tasks[0].rstrip()
-        if len(tasks) > 1:
+    def __init__(self, task,  *tasks):
+        self.task = task.rstrip()
+        if tasks:
             paragraphs = self.make_paragraphs(self.re_detab.sub('', i) for i in tasks[1:])
-            self.subtasks = {TaskItem(i) for i in paragraphs if i != ('',)}
+            self.subtasks = {TaskItem(*i) for i in paragraphs if i != ('',)}
         else:
             self.subtasks = set()
 
-    def join(self, other : "TaskItem") -> "TaskItem":
+    def __add__(self, other : "TaskItem") -> "TaskItem":
         """Merges two TaskItems that have the same self.task"""
         if self.task != other.task:
             raise ValueError
-        newTask = TaskItem((self.task,))
+        newTask = TaskItem(self.task)
         newTask.subtasks = self.subtasks.symmetric_difference(other.subtasks)
         intersect = self.subtasks.intersection(other.subtasks)
         if intersect:
@@ -34,16 +34,16 @@ class TaskItem(object):
             for k, v in dict_me.items():
                 if v in intersect:
                     j = dict_you[k]
-                    newTask.subtasks.add(v.join(j))
+                    newTask.subtasks.add(v + j)
         return newTask
 
-    def display(self) -> str:
-        return "\n".join([self.task] + ['\t' + i.display() for i in sorted(self.subtasks)])
+    def __str__(self) -> str:
+        return "\n".join([self.task] + ['\t' + str(i) for i in sorted(self.subtasks)])
         # Note: sorting so numbered tasks make sense, also so comments sort above tasks.
         # Conveniently for me, '*' < '['
 
-    def __repr__(self):
-        return "TaskItem(%s)" % self.task
+    def __repr__(self) -> str:
+        return "%s(%s)" % (self.__class__.__name__, self.task)
 
     def __lt__(self, other):
         return self.task < other.task
@@ -58,6 +58,7 @@ class TaskItem(object):
 
     @staticmethod
     def make_paragraphs(intake):
+        """Groups subtasks with their task"""
         out = []
         for line in intake:
             if line.strip() == '':
@@ -69,7 +70,7 @@ class TaskItem(object):
         return (tuple(i) for i in out)
 
 
-def make_tasks(paragraphs, divider=DIVIDER):
+def make_tasks(paragraphs, divider=DIVIDER) -> list:
     tasks = set()
     done = set()
     titles = set()
@@ -79,6 +80,7 @@ def make_tasks(paragraphs, divider=DIVIDER):
         if line == ('',):
             continue
         elif len(line) == 1 and line[0].startswith('=') and line[0].endswith('='):
+            # titles
             if divider in line[0]: break
             stripped_title = line[0].strip('=')
             if stripped_title in titles:
@@ -87,13 +89,13 @@ def make_tasks(paragraphs, divider=DIVIDER):
                 out.append(('\n' + line[0],)) #restore a title's whitespace
                 titles.add(stripped_title)
         elif any('[ ]' in i for i in line):
-            task = TaskItem(line)
+            task = TaskItem(*line)
             if task not in tasks:
                 out.append(task)
                 tasks.add(task)
             else:
                 n = out.index(task)
-                out[n] = out[n].join(task)
+                out[n] = out[n] + task
         elif any('[*]' in i for i in line):
             done.add(line)
         elif any(divider in i for i in line):
@@ -108,15 +110,15 @@ def make_tasks(paragraphs, divider=DIVIDER):
     return out
 
 
-def display_tasks(out, outfile=sys.stdout):
+def display_tasks(out, outfile=sys.stdout) -> None:
     for i in out:
         if isinstance(i, TaskItem):
-            outfile.write(i.display() + '\n')
+            outfile.write(str(i) + '\n')
         else:
             outfile.write("\n".join(i) + '\n')
 
 
-def open_infile(infile_name=None):
+def open_infile(infile_name=None) -> "FileObject":
     """Open input file. Reads from stdin if no
     input file"""
     if infile_name is None:
@@ -125,7 +127,7 @@ def open_infile(infile_name=None):
         return open(infile_name)
 
 
-def open_outfile(outfile_name=None, *, in_place=False, infile_name=None):
+def open_outfile(outfile_name=None, *, in_place=False, infile_name=None) -> "(FileObject, path)":
     """Open output file. If in_place or output file same as input file,
     open tempfile instead. Elif no outfile, output to stdout."""
     if in_place or (outfile_name and infile_name == outfile_name):
@@ -139,7 +141,7 @@ def open_outfile(outfile_name=None, *, in_place=False, infile_name=None):
     return outfile, None
 
 
-def main(infile_name=None, outfile_name=None, in_place=False, divider=DIVIDER):
+def main(infile_name=None, outfile_name=None, in_place=False, divider=DIVIDER) -> None:
     with open_infile(infile_name) as infile:
         paragraphs = TaskItem.make_paragraphs(infile)
     out = make_tasks(paragraphs, divider)

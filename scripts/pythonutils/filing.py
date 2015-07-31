@@ -4,6 +4,7 @@ import os
 import shutil
 import sys
 import tempfile
+import argparse
 
 class infile_simple(object):
     def __init__(self, file_name = None, require_input=False):
@@ -28,7 +29,7 @@ class outfile(object):
         self.noclobber = noclobber
         if self.noclobber and file_name and infile_name == file_name:
             raise RuntimeError("That makes no sense.")
-        if os.path.exists(file_name):
+        if noclobber and os.path.exists(file_name):
             raise RuntimeError("Sorry, file already exists.")
         if file_name and infile_name == file_name:
             self.with_temp = True
@@ -61,3 +62,6 @@ class outfile(object):
             os.remove(self.tmppath)
     def __getattr__(self, val):
         return getattr(self.f, val)
+
+class MyParser(argparse.ArgumentParser): #uh, rename this?
+    pass

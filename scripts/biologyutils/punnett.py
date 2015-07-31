@@ -7,7 +7,8 @@ def punnettParse(s : str) -> list:
     return ["".join(sorted(s[i:i+2])) for i in range(0,len(s),2)]
 
 def punnett(genepool1 : list, genepool2 : list) -> collections.Counter:
-    if len(genepool1) != len(genepool2): raise ValueError("Genepools must be same length")
+    if len(genepool1) != len(genepool2):
+        raise ValueError("Genepools must be same length")
     parentals = [sorted(itertools.product(*genepool1)), sorted(itertools.product(*genepool2))]
     genes = (zip(*j) for j in itertools.product(*parentals))
     c = collections.Counter("".join("".join(sorted(j, reverse=True)) for j in i) for i in genes)
