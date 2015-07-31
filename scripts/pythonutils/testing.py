@@ -61,13 +61,13 @@ def limited_globals(func = None, *, allowed_modules = None):
     if allowed_modules is None:
         allowed_modules = set('__builtins__')
     else:
-        allowed = {getattr(i,"__name__", i) for i in allowed}
-        allowed.add('__builtins__')
-    g = {k:v for k,v in func.__globals__.items() if k in allowed}
+        allowed_modules = {getattr(i,"__name__", i) for i in allowed_modules}
+        allowed_modules.add('__builtins__')
+    g = {k:v for k,v in func.__globals__.items() if k in allowed_modules}
     new_func = types.FunctionType(func.__code__, g, func.__name__, func.__defaults__, func.__closure__)
     update.wrapper(new_func, func)
-    if new_func.__doc__: new_func.__doc__ += "\n Limited globals: " + ", ".join(allowed)
-    else: new_func.__doc__ = "Limited globals: " + ', '.join(allowed)
+    if new_func.__doc__: new_func.__doc__ += "\n Limited globals: " + ", ".join(allowed_modules)
+    else: new_func.__doc__ = "Limited globals: " + ', '.join(allowed_modules)
     new_func.export_control = True
     return new_func
 
