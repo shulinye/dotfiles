@@ -52,7 +52,7 @@ def theShowMustGoOn(func = None, level = logging.DEBUG, prefix=""):
 def thisClassMustGoOn(cls = None, level = logging.DEBUG, prefix=""):
     if cls is None: return partial(thisClassMustGoOn, level=level, prefix=prefix)
     for key, val in vars(cls).items():
-        if callable(val):
+        if hasattr(val, '__call__'):
             setattr(cls, key, theShowMustGoOn(val, level=level, prefix=prefix))
     return cls
 
