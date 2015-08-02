@@ -34,6 +34,9 @@ echo "making symlinks"
 ln -sf $dotfiles/Xmodmap $HOME/.Xmodmap
 ln -sf $dotfiles/DXmodmap $HOME/.DXmodmap
 ln -sf $dotfiles/bashrc $HOME/.bashrc
+ln -sf $dotfiles/bash_aliases $HOME/.bash_aliases
+ln -sf $dotfiles/rc_common $HOME/.rc_common
+ln -sf $dotfiles/vimrc $HOME/.vimrc
 
 if [ ! -d "$HOME/xmonad" ]; then
     mkdir "$HOME/xmonad"
@@ -46,6 +49,8 @@ if [ ! -d "$HOME/.config/git" ]; then
 fi
 
 ln -sf $dotfiles/git/ignore $HOME/.config/git/ignore
+
+mkdir -p $HOME/.vim/backup
 
 echo "Errors may have happened, check $error"
 cat $error

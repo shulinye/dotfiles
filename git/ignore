@@ -35,10 +35,8 @@
 *.gpg
 
 #Ignore tmpfiles
-*/tmp/*
-*/tmp*
 *tmp
-*tmp/
+tmp/
 
 #Ignore .zim
 *.zim/*
@@ -46,4 +44,7 @@
 
 #Ignore .pyc
 *.pyc
-*/__pycache__/*
+__pycache__/
+
+#Ignore virtualenv
+venv/
