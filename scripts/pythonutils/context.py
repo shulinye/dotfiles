@@ -3,11 +3,20 @@
 import os
 import sys
 
+def validate_init(self, *, stdout=None, stderr=None, noclobber=False, use_temp=False, mode='w'):
+    self.use_temp = use_temp
+    self.mode = mode
+    self.noclobber = nonclobber
+    if noclobber:
+        for i in stdout, stderr:
+            if i is not None and os.path.lexists(i):
+                raise RuntimeError("%s already exists", %s)
+    self.stdout = stdout
+    self.stderr = stderr
+
 class RedirectStreams(object):
-    def __init__(self, *, stdout=None, stderr=None, noclobber=False, use_temp=False):
-        #Insert proper validation here
-        self.stdout = stdout
-        self.stderr = stderr
+    """Redirect the standard streams somewhere"""
+    __init__ = validate_init
     def __enter__(self):
         self.files = []
         if self.stdout is None:
@@ -47,12 +56,8 @@ class Tee(object):
         return self.__class__.__name__ + "\n\t".join(repr(i) for i in self.outputs)
 
 class TeeStreams(object):
-    """Send one of the standard streams"""
-    def __init__(self, *, stdout=None, stderr=None, noclobber=False, use_temp=False, mode = 'w'):
-        #Insert the proper validation here too
-        self.stdout = stdout
-        self.stderr = stderr
-        self.mode = mode
+    """Tee the standard streams to a file."""
+    __init__ = validate_init
     def __enter__(self):
         self.files = []
         if self.stdout is None:
