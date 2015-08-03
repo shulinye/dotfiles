@@ -15,59 +15,45 @@ import functools
 rtm_date = re.compile('<span class=\"rtm_due_value\">(?P<date>[a-zA-Z0-9\s]+)<')
 rtm_location = re.compile('<span class=\"rtm_location_value\">(?P<location>[a-zA-Z0-9\s]+)<')
 rtm_list = re.compile('<span class=\"rtm_list_value\">(?P<list>[a-zA-Z]+)<')
-re_type = re.compile('type=(?P<type>[a-zA-Z0-9\_-]+)')
-re_flags = re.compile('^([\w-]+)\=(.*)$', re.MULTILINE|re.UNICODE)
 
 
-def goodreads(rss, **kwargs):
-    arguments = {
-                    'prefix': '[ ]',
-                }
-    arguments.update(kwargs)
+def goodreads(rss, prefix : str = '[ ]'):
     d = feedparser.parse(rss)
     print("Last edited: " + datetime.strftime(datetime.today(), "%A %d %B %Y") + '\n')
     print("%s books" % len(d.entries) + '\n')
     for i in d.entries:
-        print(arguments["prefix"]+" //%(title)s// by %(author_name)s - %(link)s" % i)
+        print(prefix + " //%(title)s// by %(author_name)s - %(link)s" % i)
 
 
-def rtm(rss, **kwargs):
-    arguments = {
-                    'prefix': '[ ]',
-                    'dateformat':"%d %b %y",
-                    'days':30,
-                }
-    arguments.update(kwargs)
+def rtm(rss, prefix : str = '[ ]', dateformat : str = '%d %b %y', days : int = 30):
     d = feedparser.parse(rss)
-    future = datetime.today() + timedelta(int(arguments['days']))
+    future = datetime.today() + timedelta(days)
     for i in d.entries:
         date = datetime.strptime(rtm_date.search(i.summary).groups('date')[0], "%a %d %b %y")
         if date <= future:
             i["location"] = rtm_location.search(i.summary).groups('location')[0]
             listMatch = rtm_list.search(i.summary)
             i["list"] = "(@"+listMatch.groups('list')[0]+")" if listMatch else ''
-            print(arguments['prefix'] + " **DUE " + date.strftime(arguments['dateformat']) + \
+            print(prefix + " **DUE " + date.strftime(dateformat) + \
                     "**: %(title)s @ %(location)s %(list)s- %(link)s" % i)
 
 
-def main():
-    arguments = "\n".join(sys.argv)
-
-    flags = {i.groups()[0]: i.groups()[1] for i in re_flags.finditer(arguments)}
-
-    typeMatch = re_type.search(arguments)
-    if typeMatch:
-        typeOption = functools.reduce(operator.add, [i.split(",") for i in typeMatch.groups('type')], [])
-    else:
-        typeOption = []
-    typeOption = [i.lower() for i in typeOption]
-
-    if "goodreads" in sys.argv:
-        for i in typeOption:
-            goodreads(sekrit.rss.goodreads[i], **flags)
-    if "rtm" in sys.argv:
-        for i in typeOption:
-            rtm(sekrit.rss.rtm[i], **flags)
-
 if __name__ == "__main__":
-    main()
+    import argparse
+    import inspect
+    mapping = {'goodreads': goodreads,
+               'rtm': rtm}
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+    for name, func in mapping.items():
+        subparse = subparsers.add_parser(name)
+        subparse.set_defaults(rss=name)
+        subparse.add_argument("subtype", nargs=1, choices=getattr(sekrit.rss, name).keys())
+        params = inspect.signature(func).parameters
+        for i,j in func.__annotations__.items():
+            subparse.add_argument("--" + i, type=j, default=params[i].default)
+    args = parser.parse_args()
+    rss = getattr(sekrit.rss, args.rss)
+    subtype = rss[args.subtype[0]]
+    kwargs = {k:v for k,v in vars(args).items() if k not in ('rss', 'subtype')}
+    mapping[args.rss](subtype,**kwargs)
