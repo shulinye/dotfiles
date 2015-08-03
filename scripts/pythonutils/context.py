@@ -3,7 +3,7 @@
 import os
 import sys
 
-from autorepr import autorepr
+from .autorepr import autorepr
 __all__ = ['RedirectStreams', 'TeeStreams', 'Tee']
 
 def validate_init(self, *, stdout=None, stderr=None, noclobber=False, use_temp=False, mode='w'):

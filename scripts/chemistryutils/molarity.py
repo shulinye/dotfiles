@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
 """Calculations regarding molarity"""
-
-import sys
-sys.path.append('/home/shulinye/.dotfiles/scripts/')
+if __name__ == "__main__" and __package__ is None:
+    import sys
+    from os import path
+    sys.path.append(path.dirname(path.dirname(path.realpath(__file__))))
 
 from enum import Enum
 import re

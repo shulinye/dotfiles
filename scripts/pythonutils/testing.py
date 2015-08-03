@@ -3,7 +3,6 @@ import __main__
 import datetime
 
 from functools import wraps, update_wrapper, partial
-from inspect import signature
 import types
 
 def setup():
