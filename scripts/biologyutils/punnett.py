@@ -3,6 +3,7 @@ import itertools
 import collections
 
 def punnettParse(s : str) -> list:
+    """Take a str and turn it into a list of strings punnett can accept"""
     if len(s) % 2: raise ValueError('Even number of alleles required')
     return ["".join(sorted(s[i:i+2])) for i in range(0,len(s),2)]
 
