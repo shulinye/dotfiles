@@ -21,7 +21,7 @@ movetasks "$TODO" "$TODAY"
 
 echo -e "=== RTM ===\n\n" >> "$TODAY"
 if wget -q --spider rememberthemilk.com; then
-    echo -e "$(head -n8 $RTMMIRROR) \n $(./zimrss.py "${@:2}")" | sponge "$RTMMIRROR"
+    echo -e "$(head -n8 $RTMMIRROR) \n $(./zimrss.py "rtm" "all")" | sponge "$RTMMIRROR"
 else
     echo -e "Internet down, from mirror"
 fi
@@ -60,4 +60,5 @@ git add "$TODAY"
 git commit "$TODAY" -m "Initial commit: $(date +%F)"
 fi
 
-ln -sf "$TODAY" "/home/shulinye/Dropbox/todo/today"
+mkdir -p "$HOME/Dropbox/todo"
+ln -sf "$TODAY" "$HOME/Dropbox/todo/today"

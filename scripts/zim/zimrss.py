@@ -16,7 +16,6 @@ rtm_date = re.compile('<span class=\"rtm_due_value\">(?P<date>[a-zA-Z0-9\s]+)<')
 rtm_location = re.compile('<span class=\"rtm_location_value\">(?P<location>[a-zA-Z0-9\s]+)<')
 rtm_list = re.compile('<span class=\"rtm_list_value\">(?P<list>[a-zA-Z]+)<')
 
-
 def goodreads(rss, prefix : str = '[ ]'):
     d = feedparser.parse(rss)
     print("Last edited: " + datetime.strftime(datetime.today(), "%A %d %B %Y") + '\n')
@@ -36,7 +35,6 @@ def rtm(rss, prefix : str = '[ ]', dateformat : str = '%d %b %y', days : int = 3
             i["list"] = "(@"+listMatch.groups('list')[0]+")" if listMatch else ''
             print(prefix + " **DUE " + date.strftime(dateformat) + \
                     "**: %(title)s @ %(location)s %(list)s- %(link)s" % i)
-
 
 if __name__ == "__main__":
     import argparse

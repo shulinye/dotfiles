@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from functools import total_ordering
 import os
 import re
 import shutil
@@ -8,7 +9,7 @@ import tempfile
 
 DIVIDER = 'Tasks Completed'
 
-
+@total_ordering
 class TaskItem(object):
     """A class for tasks that's nestable."""
     re_detab = re.compile(r'^\t')

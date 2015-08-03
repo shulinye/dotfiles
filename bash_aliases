@@ -1,3 +1,4 @@
+#!/usr/bin/bash
 alias yolo="sudo"
 alias :q="exit"
 alias wq="exit"
@@ -34,11 +35,10 @@ function tasks()
         echo -e "\n"
     fi
 
-
     #RTM tasks - test the site first so I don't hang if, say, my internet is not working
     if wget -q --spider rememberthemilk.com ; then
         echo -e "${BOLD}RTM tasks${NONE}"
-        "$HOME/.dotfiles/scripts/zim/zimrss.py" "rtm" "type=all"
+        "$HOME/.dotfiles/scripts/zim/zimrss.py" "rtm" "all"
     else
         echo -e "${BOLD}Internet down, cannot check RTM. Using local mirror${NONE}"
         grep '\[ \]' "$HOME/Notes/1_-_to-Do/RTM-Mirror.txt" | grep -v '~~.*~~$'

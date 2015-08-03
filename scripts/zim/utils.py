@@ -5,7 +5,7 @@ import os
 
 from zimcommon import Constants
 
-def lastweek(date = datetime.today(),n=7):
+def lastweek(date = datetime.today(), n=7):
     return (os.path.join(Constants.JOURNALDIR.value, (date - timedelta(x)).strftime("%Y/%m/%e.txt")) for x in range(1,n+1))
 
 if __name__ == "__main__":

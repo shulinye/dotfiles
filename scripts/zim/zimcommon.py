@@ -6,7 +6,7 @@ import os
 
 class Constants(Enum):
     today = datetime.today()
-    NOTESDIR = os.path.join('/home/shulinye/',"Notes")
+    NOTESDIR = os.path.join('/home/shulinye/Notebooks/',"Notes")
     JOURNALDIR= os.path.join(NOTESDIR,"Journal")
     DIR = os.path.join(JOURNALDIR, today.strftime("%Y/%m"))
     TODAY = os.path.join(DIR, today.strftime("%d.txt"))

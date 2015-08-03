@@ -37,7 +37,10 @@ ln -sf $dotfiles/bashrc $HOME/.bashrc
 ln -sf $dotfiles/bash_aliases $HOME/.bash_aliases
 ln -sf $dotfiles/rc_common $HOME/.rc_common
 ln -sf $dotfiles/vimrc $HOME/.vimrc
-ln -sf $dotfiles/gitconfig $HOME/.gitconfig
+ln -sf $dotfiles/git $HOME/.config/git
+
+mkdir -p $HOME/.TeXworks/templates
+ln -sf $dotfiles/Texworks/templates $HOME/.TeXworks/templates/custom
 
 if [ ! -d "$HOME/xmonad" ]; then
     mkdir "$HOME/xmonad"
