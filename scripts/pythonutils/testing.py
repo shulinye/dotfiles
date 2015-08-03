@@ -2,12 +2,14 @@ import logging
 import __main__
 import datetime
 
-LOG_FILENAME =  getattr(__main__,"__file__","unknown.").split('.')[0] + "." + datetime.datetime.now().isoformat() + ".log"
-logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
-
 from functools import wraps, update_wrapper, partial
 from inspect import signature
 import types
+
+def setup():
+    LOG_FILENAME =  getattr(__main__,"__file__","unknown.").split('.')[0] + "." + datetime.datetime.now().isoformat() + ".log"
+    logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
+
 
 def sloppyRun(func, *args, **kwargs):
     """Runs a function, catching all exceptions

@@ -2,8 +2,12 @@
 
 """Calculations regarding molarity"""
 
+import sys
+sys.path.append('/home/shulinye/.dotfiles/scripts/')
+
 from enum import Enum
 import re
+from pythonutils import autorepr
 
 ELEMENT_FILE = "elements.txt"
 MOLECULAR_WEIGHT_FILE = "molecular_weights.txt"
@@ -15,6 +19,7 @@ class Conversions(Enum):
     u = 10**(-6)
     micro = 10**(-6)
 
+@autorepr
 class Element(object):
     def __init__(self, mass, name, symbol, number):
         self.mass = mass
@@ -23,8 +28,6 @@ class Element(object):
         self.number = number
     def __hash__(self):
         return hash(self.name)
-    def __repr__(self):
-        return "%s(%s, %d)" % (self.__class__.__name__, self.name, self.number)
     def __eq__(self, other):
         if not isinstance(other, Element): return False
         return self.number == other.number
