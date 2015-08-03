@@ -3,17 +3,21 @@
 import os
 import sys
 
+from autorepr import autorepr
+__all__ = ['RedirectStreams', 'TeeStreams', 'Tee']
+
 def validate_init(self, *, stdout=None, stderr=None, noclobber=False, use_temp=False, mode='w'):
     self.use_temp = use_temp
     self.mode = mode
-    self.noclobber = nonclobber
+    self.noclobber = noclobber
     if noclobber:
         for i in stdout, stderr:
             if i is not None and os.path.lexists(i):
-                raise RuntimeError("%s already exists", %s)
+                raise RuntimeError("%s already exists" % i)
     self.stdout = stdout
     self.stderr = stderr
 
+@autorepr
 class RedirectStreams(object):
     """Redirect the standard streams somewhere"""
     __init__ = validate_init
@@ -40,8 +44,7 @@ class RedirectStreams(object):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         for i in self.files: i.close()
-    def __repr__(self):
-        return "%s(stdout=%s, stderr=%s)" % (self.__class__.__name__, str(self.stdout), str(self.stderr))
+
 
 class Tee(object):
     def __init__(*outputs):
@@ -55,6 +58,7 @@ class Tee(object):
     def __repr__(self):
         return self.__class__.__name__ + "\n\t".join(repr(i) for i in self.outputs)
 
+@autorepr
 class TeeStreams(object):
     """Tee the standard streams to a file."""
     __init__ = validate_init

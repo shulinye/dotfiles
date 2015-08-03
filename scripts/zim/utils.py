@@ -1,11 +1,16 @@
 #/usr/bin/python3
 
 from datetime import datetime, timedelta
+from dateutils import parser as dateparser
 import os
 
 from zimcommon import Constants
 
-def lastweek(date = datetime.today(), n=7):
+def lastweek(date : str = None, n : int = 7):
+    if date:
+        date = dateparser.parse(date)
+    else:
+        date = datetime.today()
     return (os.path.join(Constants.JOURNALDIR.value, (date - timedelta(x)).strftime("%Y/%m/%e.txt")) for x in range(1,n+1))
 
 if __name__ == "__main__":

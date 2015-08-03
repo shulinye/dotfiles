@@ -9,9 +9,9 @@ def autorepr(obj = None, *, params = None):
     if not params:
         sig = inspect.signature(obj.__init__)
         params = sig.parameters
+        inspected = True
     if isinstance(obj,type): #I'm being used as a decorator
-        if 'self' in params:
-            params = [i for i in params if i !='self']
+        if inspected: params = list(params)[1:] #drop the first argument, that's self
         s = "def __repr__(self):\n    return '%s(" + ", ".join(["%s"]*(len(params)))
         s += ")' % (self.__class__.__name__, "
         s += ', '.join("'%s=' + repr(self.%s)" % (i, i) for i in params) + ')'
