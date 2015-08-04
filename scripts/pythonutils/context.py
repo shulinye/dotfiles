@@ -85,5 +85,26 @@ class TeeStreams(object):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         for i in self.files: i.close()
-    def __repr__(self):
-        return "%s(stdout=%s, stderr=%s)" % (self.__class__.__name__, str(self.stdout), str(self.stderr))
+
+@autorepr
+class LoggerFilelike(object):
+    def __init__(self, logger, level):
+        self.logger = logger
+        self.level = level
+    def __write__(self, message):
+        self.logger(self.level, message)
+    def __flush__(self):
+        pass
+
+@autorepr
+class LogStderr(object):
+    def __init__(self, logger, level):
+        self.logger = logger
+        self.level = level
+    def __enter__(self):
+        self.stderr = LoggerFilelike(self.logger, self.level)
+        sys.stderr.flush()
+        sys.stderr = self.stderr
+    def __exit__(self, etype, value, trace):
+        sys.stderr.flush()
+        sys.stderr = sys.__stderr__

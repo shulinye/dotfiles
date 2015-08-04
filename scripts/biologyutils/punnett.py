@@ -18,7 +18,7 @@ def punnett(genepool1 : list, genepool2 : list) -> collections.Counter:
     return c
 
 def inbreed_f1(counter):
-    c = counter.most_common()
+    c = counter.items()
     output = collections.Counter()
     for i, j in itertools.product(c,c):
         offspring = punnett(*map(punnettParse, [i[0], j[0]]))
@@ -30,7 +30,7 @@ def recessive_f1(counter, recessive = None):
     if recessive is None:
         recessive = c.keys()[0].lower()
     output = collections.Counter()
-    c = counter.most_common()
+    c = counter.items()
     normalize = sum(counter.values())
     for i in c:
         offspring = punnett(*map(punnettParse, [i[0], recessive]))

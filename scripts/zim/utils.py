@@ -11,7 +11,7 @@ def lastweek(date : str = None, n : int = 7):
         date = dateparser.parse(date)
     else:
         date = datetime.today()
-    return (os.path.join(Constants.JOURNALDIR.value, (date - timedelta(x)).strftime("%Y/%m/%e.txt")) for x in range(1,n+1))
+    return (os.path.join(Constants.JOURNALDIR.value, (date - timedelta(x)).strftime("%Y/%m/%d.txt")) for x in range(1,n+1))
 
 if __name__ == "__main__":
     mapping = {"lastweek": lastweek}
