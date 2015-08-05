@@ -1,9 +1,15 @@
+import datetime
 import logging
 import __main__
-import datetime
 
+import errno
 from functools import wraps, update_wrapper, partial
+import inspect
+import os
+import signal
 import types
+
+from .autorepr import autorepr
 
 def setup():
     LOG_FILENAME =  getattr(__main__,"__file__","unknown.").split('.')[0] + "." + datetime.datetime.now().isoformat() + ".log"
@@ -72,3 +78,43 @@ def limited_globals(func = None, *, allowed_modules = None):
     new_func.export_control = True
     return new_func
 
+@autorepr
+class Timeout(object):
+    """Run a function or a block of code for a certain amount of time.
+    Raises TimeoutError if time exceeded.
+
+    Can be used as a context manager or a decorator
+
+    with Timeout():
+        stuff
+
+    @Timeout()
+    def function():
+        pass
+    """
+    def __init__(self, *, seconds=5, error_message=os.strerror(errno.ETIME), loglevel = None):
+        self.seconds = seconds
+        self.error_message = error_message
+        self.loglevel = None
+    def handle(self, signum, frame):
+        if self.loglevel is not None:
+            logging.log(self.loglevel, repr(inspect.getframeinfo(frame)))
+        raise TimeoutError(self.error_message)
+    def __enter__(self):
+        signal.signal(signal.SIGALRM, self.handle)
+        signal.alarm(self.seconds)
+    def __exit__(self, etype, value, traceback):
+        signal.alarm(0)
+    def __call__(self, func):
+        @wraps(func)
+        def decorated(*args, **kwargs):
+            signal.signal(signal.SIGALRM, self.handle)
+            signal.alarm(self.seconds)
+            try:
+                ret = func(*args, **kwargs)
+            finally:
+                signal.alarm(0)
+            return ret
+        if decorated.__doc__: decorated.__doc__ += "\n Timeout: %s" % self.seconds
+        else: decorated.__doc__ = "With timeout: %s" % self.seconds
+        return decorated
