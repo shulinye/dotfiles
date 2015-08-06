@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+__all__ = ['color']
+
 class color(object):
    PURPLE = '\033[95m'
    CYAN = '\033[96m'

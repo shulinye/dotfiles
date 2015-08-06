@@ -6,6 +6,8 @@ import sys
 import tempfile
 import argparse
 
+__all__ = ['infile_simple', 'outfile']
+
 class infile_simple(object):
     def __init__(self, file_name = None, require_input=False):
         self.file_name = file_name

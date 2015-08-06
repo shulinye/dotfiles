@@ -12,20 +12,22 @@ import types
 
 from .autorepr import autorepr
 
+__all__ = ['setup', 'sloppy_run', 'typecheck', 'type_validate', 'TheShowMustGoOn', 'limited_globals', 'Timeout']
+
 def setup():
     """Default setup for logging"""
     LOG_FILENAME =  getattr(__main__,"__file__","unknown.").split('.')[0] + "." + datetime.datetime.now().isoformat() + ".log"
     logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
 
-def sloppyRun(func, *args, **kwargs):
+def sloppy_run(func, *args, **kwargs):
     """Runs a function, catching all exceptions
     and writing them to a log file."""
     try:
         return func(*args, **kwargs)
     except:
         logging.exception(func.__name__ + str(args) + str(kwargs))
-sloppyRun.export_control = True
+sloppy_run.export_control = True
 
 def typecheck(obj, *args):
     """Check type of nested objects"""
@@ -38,6 +40,45 @@ def typecheck(obj, *args):
                     return False
             return True
     return False
+
+def mod_docstring(func, val):
+    if func.__doc__ : fuc.__doc__ += "\n %s" % val
+    else: func .__doc__ = val
+    func.export_control = True
+
+def yield_positional(params):
+    for i in params:
+        if i.kind == inspect.Parameter.POSITIONAL_ONLY:
+            yield i
+        elif i.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
+            yield i
+        elif i.kind == inspect.Parameter.VAR_POSITIONAL:
+            while True:
+                yield i
+        else:
+            raise StopIteration
+
+def type_validate(func):
+    params = inspect.signature(func).parameters
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        positional = yield_positional(params.values())
+        for i in args:
+            try:
+                j = next(positional)
+                if j.annotation != inspect._empty and not isinstance(i, j.annotation):
+                    raise TypeError("Input of incorrect type:\n expected %r for %s, got %r" % (j.annotation, j.name, type(i)))
+            except StopIteration:
+                raise TypeError("Too many positional arguments")
+        for i in kwargs:
+            if params[i].annotation != inspect._empty and kwargs[i] != params[i].default and not isinstance(kwargs[i], params[i].annotation):
+                raise TypeError("Input of incorrect type:\n expected %r for %s, got %r" % (params[i].annotation, params[i].name, type(i)))
+        ret = func(*args, **kwargs)
+        if 'return' in func.__annotations__ and not isinstance(ret, func.__annotations__['return']):
+            raise TypeError("%s returned item not of type %r" % (func.__qualname__, func.__annotations__['return']))
+        return ret
+    mod_docstring(decorated, "type validation is on")
+    return decorated
 
 @autorepr
 class TheShowMustGoOn(object):
@@ -76,14 +117,12 @@ class TheShowMustGoOn(object):
             try:
                 ret = obj(*args, **kwargs)
             except:
-                logging.exception("Got exception.")
+                logging.exception("Got exception in %s."  % func.__qualname__)
                 return None
             else:
                 logging.log(self.level, "Got results: %r", ret)
                 return ret
-        if decorated.__doc__ : decorated.__doc__ += "\n Wrapped with theShowMustGoOn"
-        else: decorated.__doc__ = "Wrapped with theShowMustGoOn"
-        decorated.export_control = True
+        mod_docstring(decorated, 'Wrapped with TheShowMustGoOn')
         return decorated
     def __enter__(self):
         pass
@@ -103,10 +142,8 @@ def limited_globals(func = None, *, allowed_modules = None):
         allowed_modules.add('__builtins__')
     g = {k:v for k,v in func.__globals__.items() if k in allowed_modules}
     new_func = types.FunctionType(func.__code__, g, func.__name__, func.__defaults__, func.__closure__)
-    update.wrapper(new_func, func)
-    if new_func.__doc__: new_func.__doc__ += "\n Limited globals: " + ", ".join(allowed_modules)
-    else: new_func.__doc__ = "Limited globals: " + ', '.join(allowed_modules)
-    new_func.export_control = True
+    update_wrapper(new_func, func)
+    mod_docstring(new_func, "Limited globals: " + ', '.join(allowed_modules))
     return new_func
 
 @autorepr

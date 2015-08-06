@@ -4,6 +4,8 @@ from functools import partial
 import inspect
 import types
 
+__all__ = ['autorepr']
+
 def autorepr(obj=None, *, params=None):
     """Function that automagically gives you a __repr__.
     If no params are given, inspects __init__
