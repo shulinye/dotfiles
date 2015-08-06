@@ -12,6 +12,7 @@ import types
 from .autorepr import autorepr
 
 def setup():
+    """Default setup for logging"""
     LOG_FILENAME =  getattr(__main__,"__file__","unknown.").split('.')[0] + "." + datetime.datetime.now().isoformat() + ".log"
     logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)
 
@@ -23,7 +24,7 @@ def sloppyRun(func, *args, **kwargs):
         return func(*args, **kwargs)
     except:
         logging.exception(func.__name__ + str(args) + str(kwargs))
-sloppyRun.sloppy = True
+sloppyRun.export_control = True
 
 def typecheck(obj, *args):
     """Check type of nested objects"""
@@ -57,6 +58,7 @@ def theShowMustGoOn(func = None, level = logging.DEBUG, prefix=""):
     return decorated
 
 def thisClassMustGoOn(cls = None, level = logging.DEBUG, prefix=""):
+    """Class variant of theShowMustGoOn"""
     if cls is None: return partial(thisClassMustGoOn, level=level, prefix=prefix)
     for key, val in vars(cls).items():
         if hasattr(val, '__call__'):
@@ -64,6 +66,7 @@ def thisClassMustGoOn(cls = None, level = logging.DEBUG, prefix=""):
     return cls
 
 def limited_globals(func = None, *, allowed_modules = None):
+    """Limit a function's access to globals (__builtins__ allowed though)"""
     if func is None: return partial(limited_globals, allowed_modules=allowed_modules)
     if allowed_modules is None:
         allowed_modules = set('__builtins__')
