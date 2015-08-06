@@ -39,8 +39,15 @@ def recessive_f1(counter, recessive = None):
     return output
 
 if __name__ == "__main__":
+    mapping = {'inbreed': inbreed_f1,
+            'recessive': recessive_f1}
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('genepools', nargs=2, help="Genes. Like AaBb")
+    parser.add_argument('-f1', choices=['recessive', 'inbreed'])
     args = parser.parse_args()
-    print(punnett(*map(punnettParse, args.genepools)))
+    f1 = punnett(*map(punnettParse, args.genepools))
+    if args.f1:
+        print(mapping[args.f1](f1))
+    else:
+        print(f1)

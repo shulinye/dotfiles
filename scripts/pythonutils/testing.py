@@ -7,6 +7,7 @@ from functools import wraps, update_wrapper, partial
 import inspect
 import os
 import signal
+import traceback
 import types
 
 from .autorepr import autorepr
@@ -38,32 +39,59 @@ def typecheck(obj, *args):
             return True
     return False
 
-def theShowMustGoOn(func = None, level = logging.DEBUG, prefix=""):
-    """Decorator. Catches exceptions, writes them to log file."""
-    if func is None: return partial(theShowMustGoOn, level=level, prefix=prefix)
-    @wraps(func)
-    def decorated(*args, **kwargs):
-        logging.log(level, prefix + "calling '%s'(%r,%r)", func.__qualname__, args, kwargs)
-        try:
-            ret = func(*args, **kwargs)
-        except:
-            logging.exception("Got exception.")
-            return None
-        else:
-            logging.log(level, "Got results: %r", ret)
-            return ret
-    if decorated.__doc__ : decorated.__doc__ += "\n Wrapped with theShowMustGoOn"
-    else: decorated.__doc__ = "Wrapped with theShowMustGoOn"
-    decorated.export_control = True
-    return decorated
-
-def thisClassMustGoOn(cls = None, level = logging.DEBUG, prefix=""):
-    """Class variant of theShowMustGoOn"""
-    if cls is None: return partial(thisClassMustGoOn, level=level, prefix=prefix)
-    for key, val in vars(cls).items():
-        if hasattr(val, '__call__'):
-            setattr(cls, key, theShowMustGoOn(val, level=level, prefix=prefix))
-    return cls
+@autorepr
+class TheShowMustGoOn(object):
+    """Catches exceptions, writes them to log file.
+    After all, the show must go on.
+    
+    Works as:
+        - a function decorator
+        
+        @TheShowMustGoOn()
+        def f():
+            raise ValueError
+        
+        - a class decorator (decorates all the methods of the class)
+        @TheShowMustGoOn()
+        class Merp(object):
+            def method1():
+                raise ValueError
+        
+        -Context manager
+        with TheShowMustGoOn():
+            raise ValueError"""
+    def __init__(self, *, level = logging.DEBUG, prefix=""):
+        self.level = level
+        self.prefix = prefix
+    def __call__(self, obj):
+        if isinstance(obj, type):
+            #I'm a class
+            for key, val in vars(obj).items():
+                if hasattr(val, '__call__'):
+                    setattr(obj, key, self(val))
+            return obj
+        @wraps(obj)
+        def decorated(*args, **kwargs):
+            logging.log(self.level, self.prefix + "calling '%s'(%r,%r)", obj.__qualname__, args, kwargs)
+            try:
+                ret = obj(*args, **kwargs)
+            except:
+                logging.exception("Got exception.")
+                return None
+            else:
+                logging.log(self.level, "Got results: %r", ret)
+                return ret
+        if decorated.__doc__ : decorated.__doc__ += "\n Wrapped with theShowMustGoOn"
+        else: decorated.__doc__ = "Wrapped with theShowMustGoOn"
+        decorated.export_control = True
+        return decorated
+    def __enter__(self):
+        pass
+    def __exit__(self, etype, value, trace):
+        if etype is not None:
+            logging.error("Got exception:\n" + ''.join(traceback.format_exception(etype, value, trace)))
+            return True #swallow errors
+        logging.log(self.level, "No errors")
 
 def limited_globals(func = None, *, allowed_modules = None):
     """Limit a function's access to globals (__builtins__ allowed though)"""
