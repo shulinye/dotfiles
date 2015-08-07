@@ -60,6 +60,9 @@ class Heap(object):
         else:
             heapq.heappush(self.h, (self.key(item), item))
     def pushpop(self, item):
+        """Push, then pop
+        
+        Calls heapq.heappushpop"""
         if self.key is None:
             return heapq.heappushpop(self.h, item)
         else:
@@ -76,7 +79,14 @@ class Heap(object):
         self.key = key
         heapq.heapify(self.h)
     def replace(self, item):
+        """Pop, then push
+        
+        Calls heapq.heapreplace"""
         if self.key is None:
             return heapq.heapreplace(self.h, item)
         else:
             return heapq.heapreplace(self.h, (self.key(item), item))[1]
+    def consume(self):
+        """Outputs the heap as a sorted iterator. Consumes heap while doing so"""
+        while self.h:
+            yield self.pop()
