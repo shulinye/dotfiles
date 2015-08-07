@@ -159,6 +159,8 @@ class Timeout(object):
     @Timeout()
     def function():
         pass
+
+    Unix only (relies on signal.SIGALRM) and not thread-safe.
     """
     def __init__(self, *, seconds=5, error_message=os.strerror(errno.ETIME), loglevel = None):
         self.seconds = seconds
