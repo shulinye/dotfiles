@@ -59,6 +59,8 @@ def yield_positional(params):
             raise StopIteration
 
 def type_validate(func):
+    """Validates types for functions, using
+    function annotations"""
     params = inspect.signature(func).parameters
     @wraps(func)
     def decorated(*args, **kwargs):

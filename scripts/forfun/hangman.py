@@ -14,8 +14,10 @@ class Hangman(object):
     def __init__(self):
         self.status = 0
     def output(self):
-        if self.status >= 6: raise ValueError("Dead")
-        self.status += 1
-        return self.hangman[:1 + self.status] + [self.empty]*(6-self.status) + [self.end]
+        return self.hangman[:2 + self.status] + [self.empty]*(5-self.status) + [self.end]
     def display(self):
         print("\n".join(self.output()))
+    def __iadd__(self, val):
+        if self.status >= 5: raise ValueError("Already dead!")
+        self.status += val
+        return self
