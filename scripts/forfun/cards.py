@@ -45,11 +45,11 @@ class Deck(deque):
         hands = [Deck([]) for _ in range(n)]
         while self:
             for i in hands:
-                i.appendleft(self.popleft())
+                i.appendleft(super().popleft(self))
         return hands
     def shuffle(self):
         shuffle(self)
     def popleft(self, n = 1):
-        return [super(Card, self).popleft() for _ in range(n)]
+        return [super(Deck, self).popleft() for _ in range(n)]
     def pop(self, n = 1):
-        return [super(Card, self).pop() for _ in range(n)]
+        return [super(Deck, self).pop() for _ in range(n)]

@@ -87,6 +87,18 @@ class Heap(object):
         else:
             return heapq.heapreplace(self.h, (self.key(item), item))[1]
     def consume(self):
-        """Outputs the heap as a sorted iterator. Consumes heap while doing so"""
+        """Outputs the heap as a sorted iterator.
+        Consumes heap while doing so"""
         while self.h:
             yield self.pop()
+    def verify(self):
+        """Verifies my heapiness."""
+        length = len(self.h)
+        for index, val in enumerate(self.h):
+            left_child = index*2 + 1
+            if left_child >= length: break
+            if self.h[left_child] < val: return False
+            right_child = left_child + 1
+            if right_child >= length: break
+            if self.h[right_child] < val: return False
+        return True
