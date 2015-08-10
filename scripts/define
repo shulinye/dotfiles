@@ -1,9 +1,17 @@
 #!/usr/bin/python3
 
-import sys
+"""Uses PyDictionary to define words"""
 
+import argparse
 from PyDictionary import PyDictionary
 dictionary = PyDictionary()
+
+parser = argparse.ArgumentParser()
+parser.add_argument('words', nargs='+')
+parser.add_argument('--synonyms', '-s', action='store_true')
+parser.add_argument('--antonyms', '-a', action='store_true')
+parser.add_argument('--translate', '-t', default='')
+args = parser.parse_args()
 
 class color:
    PURPLE = '\033[95m'
@@ -17,10 +25,19 @@ class color:
    UNDERLINE = '\033[4m'
    END = '\033[0m'
 
-for i in sys.argv[1:]:
+for i in args.words:
     d = dictionary.meaning(i)
     print(color.BOLD + i + color.END)
-    for k in d:
-        print(color.GREEN + k + color.END)
-        print("\n".join(d[k]))
-    print("")
+    if d is not None:
+        for k in d:
+            print(color.GREEN + k + color.END)
+            print("\n".join(d[k]))
+        print("")
+    else:
+        print("No definitions found")
+    if args.synonyms:
+        print("Synonyms: " + ", ".join(dictionary.synonym(i)))
+    if args.antonyms:
+        print("Antonyms: " + ", ".join(dictionary.antonym(i)))
+    if args.translate:
+        print("Translation to %s: %s" % (args.translate, dictionary.translate(i, args.translate)))
