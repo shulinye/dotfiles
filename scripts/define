@@ -5,6 +5,7 @@
 import argparse
 from enum import Enum
 from PyDictionary import PyDictionary
+import sys, os
 dictionary = PyDictionary()
 
 parser = argparse.ArgumentParser()
@@ -22,8 +23,21 @@ class color(Enum):
    BOLD = '\033[1m'
    END = '\033[0m'
 
+class SurpressOutput(object):
+    def __init__(self):
+        pass
+    def __enter__(self):
+        self.devnull = open(os.devnull, 'w')
+        sys.stdout.flush()
+        sys.stdout = self.devnull
+    def __exit__(self, etype, value, trace):
+        sys.stdout.flush()
+        sys.stdout = sys.__stdout__
+        self.devnull.close()
+
 for i in args.words:
-    d = dictionary.meaning(i)
+    with SurpressOutput():
+        d = dictionary.meaning(i)
     print(color.BOLD.value + i + color.END.value)
     if d is not None:
         for k in d:
@@ -33,8 +47,8 @@ for i in args.words:
     else:
         print("No definitions found")
     if args.synonyms:
-        print("Synonyms: " + ", ".join(dictionary.synonym(i)))
+        print("%sSynonyms%s: " % (color.BOLD.value, color.END.value) + ", ".join(dictionary.synonym(i)))
     if args.antonyms:
-        print("Antonyms: " + ", ".join(dictionary.antonym(i)))
+        print("%sAntonyms%s: " % (color.BOLD.value, color.END.value) + ", ".join(dictionary.antonym(i)))
     if args.translate:
-        print("Translation to %s: %s" % (args.translate, dictionary.translate(i, args.translate)))
+        print("%sTranslation to %s%s: %s" % (color.BOLD.value, args.translate, color.END.value, dictionary.translate(i, args.translate)))

@@ -30,6 +30,8 @@ else
     echo "pip not installed" >>$error
 fi
 
+sudo cp "$dotfiles/scripts/define" "/usr/bin/define"
+
 echo "making symlinks"
 ln -sf $dotfiles/Xmodmap $HOME/.Xmodmap
 ln -sf $dotfiles/DXmodmap $HOME/.DXmodmap
