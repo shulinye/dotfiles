@@ -1,17 +1,18 @@
 #!/usr/bin/python3
-
 """Calculations regarding molarity"""
+import sys
+from os import path
+
 if __name__ == "__main__" and __package__ is None:
-    import sys
-    from os import path
     sys.path.append(path.dirname(path.dirname(path.realpath(__file__))))
 
 from enum import Enum
 import re
 from pythonutils import autorepr
 
-ELEMENT_FILE = "elements.txt"
-MOLECULAR_WEIGHT_FILE = "molecular_weights.txt"
+BASEPATH = path.dirname(path.realpath(__file__))
+ELEMENT_FILE = path.join(BASEPATH, "elements.txt")
+MOLECULAR_WEIGHT_FILE = path.join(BASEPATH, "molecular_weights.txt")
 
 class Conversions(Enum):
     re_format = re.compile(r'(\d+)\s*([a-z]+)')
