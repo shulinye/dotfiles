@@ -32,7 +32,7 @@ class RedirectStreams(object):
             if self.noclobber and os.path.lexists(self.stdout):
                 raise RuntimeError("%s already exists" % self.stdout)
             if self.use_temp:
-                self.files[0] = tempfile.NamedTemporaryFile(delete=False)
+                self.files[0] = tempfile.NamedTemporaryFile(delete=False, mode='w')
                 self.tmppaths[0] = self.files[0].name
             else:
                 self.files[0] = open(self.stdout, self.mode)
@@ -47,7 +47,7 @@ class RedirectStreams(object):
             if self.noclobber and os.path.lexists(self.stderr):
                 raise RuntimeError("%s already exists" % self.stderr)
             if self.use_temp:
-                self.files[1] = tempfile.NamedTemporaryFile(delete=False)
+                self.files[1] = tempfile.NamedTemporaryFile(delete=False, mode='w')
                 self.tmppaths[1] = self.files[1].name
             else:
                 self.files[1] = open(self.stderr, self.mode)
@@ -58,7 +58,7 @@ class RedirectStreams(object):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         if self.use_temp:
-            for tmpfile, path, dest in zip(self.files, self.temppaths, [self.stdout, self.stderr]):
+            for tmpfile, path, dest in zip(self.files, self.tmppaths, [self.stdout, self.stderr]):
                 if tmpfile:
                     tmpfile.flush()
                     shutil.copyfile(path, dest)
@@ -93,7 +93,7 @@ class TeeStreams(object):
             if self.noclobber and os.path.lexists(self.stdout):
                 raise RuntimeError("%s already exists" % self.stdout)
             if self.use_temp:
-                self.files[0] = tempfile.NamedTemporaryFile(delete=False)
+                self.files[0] = tempfile.NamedTemporaryFile(delete=False, mode = 'w')
                 self.tmppaths[0] = self.files[0].name
             else:
                 self.files[0] = open(self.stdout, self.mode)
@@ -110,7 +110,7 @@ class TeeStreams(object):
             if self.noclobber and os.path.lexists(self.stderr):
                 raise RuntimeError("%s already exists" % self.stderr)
             if self.use_temp:
-                self.files[1] = tempfile.NamedTemporaryFile(delete=False)
+                self.files[1] = tempfile.NamedTemporaryFile(delete=False, mode = 'w')
                 self.tmppaths[1] = self.files[1].name
             else:
                 self.files[1] = open(self.stderr, self.mode)
@@ -122,7 +122,7 @@ class TeeStreams(object):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         if self.use_temp:
-            for tmpfile, path, dest in zip(self.files, self.temppaths, [self.stdout, self.stderr]):
+            for tmpfile, path, dest in zip(self.files, self.tmppaths, [self.stdout, self.stderr]):
                 if tmpfile:
                     tmpfile.flush()
                     shutil.copyfile(path, dest)
