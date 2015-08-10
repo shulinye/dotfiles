@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 
 import os
+import shutil
 import sys
+import tempfile
 
 from .autorepr import autorepr
-__all__ = ['RedirectStreams', 'TeeStreams', 'Tee']
+__all__ = ['RedirectStreams', 'TeeStreams', 'Tee', 'LoggerFilelike', 'LogStderr']
 
 def validate_init(self, *, stdout=None, stderr=None, noclobber=False, use_temp=False, mode='w'):
     self.use_temp = use_temp
@@ -21,30 +23,49 @@ def validate_init(self, *, stdout=None, stderr=None, noclobber=False, use_temp=F
 class RedirectStreams(object):
     """Redirect the standard streams somewhere"""
     __init__ = validate_init
+    def reset(self):
+        self.files = [None,None]
+        self.tmppaths = [None,None]
     def __enter__(self):
-        self.files = []
-        if self.stdout is None:
-            self.stdout = sys.stdout
-        else:
-            f = open(self.stdout, 'w')
-            self.stdout = f
-            self.files.append(f)
+        self.reset()
+        if self.stdout is not None:
+            if self.noclobber and os.path.lexists(self.stdout):
+                raise RuntimeError("%s already exists" % self.stdout)
+            if self.use_temp:
+                self.files[0] = tempfile.NamedTemporaryFile(delete=False)
+                self.tmppaths[0] = self.files[0].name
+            else:
+                self.files[0] = open(self.stdout, self.mode)
+            sys.stdout.flush()
+            sys.stdout = self.files[0]
         if self.stderr is None:
-            self.stderr = sys.stderr
+            pass
         elif self.stderr == self.stdout:
-            self.stderr = f
+            sys.stderr.flush()
+            sys.stderr = self.files[0]
         else:
-            f = open(self.stderr, 'w')
-            self.stderr = f
-            self.files.append(f)
-        sys.stdout.flush() ; sys.stderr.flush()
-        sys.stdout, sys.stderr = self.stdout, self.stderr
+            if self.noclobber and os.path.lexists(self.stderr):
+                raise RuntimeError("%s already exists" % self.stderr)
+            if self.use_temp:
+                self.files[1] = tempfile.NamedTemporaryFile(delete=False)
+                self.tmppaths[1] = self.files[1].name
+            else:
+                self.files[1] = open(self.stderr, self.mode)
+            sys.stderr.flush()
+            sys.stderr = self.files[1]
     def __exit__(self, etype, value, trace):
         sys.stdout.flush() ; sys.stderr.flush()
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
-        for i in self.files: i.close()
-
+        if self.use_temp:
+            for tmpfile, path, dest in zip(self.files, self.temppaths, [self.stdout, self.stderr]):
+                if tmpfile:
+                    tmpfile.flush()
+                    shutil.copyfile(path, dest)
+                    os.remove(path)
+        for i in self.files:
+            if i is not None: i.close()
+        self.reset()
 
 class Tee(object):
     def __init__(*outputs):
@@ -62,29 +83,53 @@ class Tee(object):
 class TeeStreams(object):
     """Tee the standard streams to a file."""
     __init__ = validate_init
+    def reset(self):
+        self.tees = [None, None]
+        self.files = [None, None]
+        self.tmppaths = [None, None]
     def __enter__(self):
-        self.files = []
-        if self.stdout is None:
-            self.stdout = sys.stdout
-        else:
-            f = open(self.stdout, 'w')
-            self.stdout = Tee(sys.stdout, f)
-            self.files.append(f)
+        self.reset()
+        if self.stdout is not None:
+            if self.noclobber and os.path.lexists(self.stdout):
+                raise RuntimeError("%s already exists" % self.stdout)
+            if self.use_temp:
+                self.files[0] = tempfile.NamedTemporaryFile(delete=False)
+                self.tmppaths[0] = self.files[0].name
+            else:
+                self.files[0] = open(self.stdout, self.mode)
+            self.tees[0] = Tee(sys.stdout, self.files[0])
+            sys.stdout.flush()
+            sys.stdout = self.tees[0]
         if self.stderr is None:
-            self.stderr = sys.stderr
+            pass
         elif self.stderr == self.stdout:
-            self.stderr = Tee(sys.stderr, f)
+            self.tees[1] = Tee(sys.stderr, f)
+            sys.stderr.flush()
+            sys.stderr = self.tees[1]
         else:
-            f = open(self.stderr, 'w')
-            self.stderr = Tee(sys.stderr, f)
-            self.files.append(f)
-        sys.stdout.flush() ; sys.stderr.flush()
-        sys.stdout, sys.stderr = self.stdout, self.stderr
+            if self.noclobber and os.path.lexists(self.stderr):
+                raise RuntimeError("%s already exists" % self.stderr)
+            if self.use_temp:
+                self.files[1] = tempfile.NamedTemporaryFile(delete=False)
+                self.tmppaths[1] = self.files[1].name
+            else:
+                self.files[1] = open(self.stderr, self.mode)
+            self.tees[1] = Tee(sys.stderr, self.files[1])
+            sys.stderr.flush()
+            sys.stderr = self.tees[1]
     def __exit__(self, etype, value, trace):
         sys.stdout.flush() ; sys.stderr.flush()
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
-        for i in self.files: i.close()
+        if self.use_temp:
+            for tmpfile, path, dest in zip(self.files, self.temppaths, [self.stdout, self.stderr]):
+                if tmpfile:
+                    tmpfile.flush()
+                    shutil.copyfile(path, dest)
+                    os.remove(path)
+        for i in self.files:
+            if i is not None: i.close()
+        self.reset()
 
 @autorepr
 class LoggerFilelike(object):
