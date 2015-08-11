@@ -8,33 +8,33 @@ __all__ = ['Heap']
 
 class Heap(object):
     """Wrapper around python's heapq module"""
-    def __init__(self, h = None, key = None):
-        if h is None:
-            self.h = []
+    def __init__(self, heap = None, key = None):
+        if heap is None:
+            self._heap = []
         elif key is None:
-            self.h = list(h)
+            self._heap = list(heap)
         else:
-            self.h = [(key(i), i) for i in h]
-        heapq.heapify(self.h)
+            self._heap = [(key(i), i) for i in heap]
+        heapq.heapify(self._heap)
         self.key = key
     def __len__(self):
-        return len(self.h)
+        return len(self._heap)
     def __contains__(self, item):
         if self.key is None:
-            return item in self.h
+            return item in self._heap
         else:
-            for i,j in self.h:
-                if item == j:
+            for _, value in self._heap:
+                if item == value:
                     return True
             return False
     def __repr__(self):
         s =  '<' + self.__class__.__name__
         if self.key:
             s += " with key " + self.key.__name__
-            s += ": " + ", ".join(repr(j) for i,j in self.h[:10])
+            s += ": " + ", ".join(repr(value) for _, value in self._heap[:10])
         else:
-            s += ": " + ", ".join(repr(i) for i in self.h[:10])
-        if len(self.h) > 10:
+            s += ": " + ", ".join(repr(value) for value in self._heap[:10])
+        if len(self._heap) > 10:
             s += "..."
         s += '>'
         return s
@@ -44,61 +44,72 @@ class Heap(object):
         
         if index is None, pops smallest element"""
         if index is None:
-            val =  heapq.heappop(self.h)
+            val = heapq.heappop(self._heap)
         else:
-            val = self.h[index]
-            self.h[index] = self.h[-1]
-            self.h.pop()
-            heapq._siftup(self.h, index)
+            val = self._heap[index]
+            self._heap[index] = self._heap[-1]
+            self._heap.pop()
+            heapq._siftup(self._heap, index)
         if self.key:
             return val[1]
         else:
             return val
     def push(self, item):
         if self.key is None:
-            heapq.heappush(self.h, item)
+            heapq.heappush(self._heap, item)
         else:
-            heapq.heappush(self.h, (self.key(item), item))
+            heapq.heappush(self._heap, (self.key(item), item))
     def pushpop(self, item):
         """Push, then pop
         
         Calls heapq.heappushpop"""
         if self.key is None:
-            return heapq.heappushpop(self.h, item)
+            return heapq.heappushpop(self._heap, item)
         else:
-            return heapq.heappushpop(self.h, (self.key(item), item))[1]
+            return heapq.heappushpop(self._heap, (self.key(item), item))[1]
     def heapify(self, key = None):
         """Heapifies the heap. If optional parameter
         key is supplied, uses that as the key"""
         if key is None:
             pass
         elif self.key is None:
-            self.h = [(key(i), i) for i in self.h]
+            self._heap = [(key(value), value) for value in self._heap]
         else:
-            self.h = [(key(j), j) for i,j in self.h]
+            self._heap = [(key(value), value) for _, value in self._heap]
         self.key = key
-        heapq.heapify(self.h)
+        heapq.heapify(self._heap)
+    def rekey(self, key):
+        if key is None:
+            self._heap = [value for _, value in self._heap]
+            self.key = None
+            heapq.heapify(self._heap)
+        else:
+            self.heapify(key)
     def replace(self, item):
         """Pop, then push
         
         Calls heapq.heapreplace"""
         if self.key is None:
-            return heapq.heapreplace(self.h, item)
+            return heapq.heapreplace(self._heap, item)
         else:
-            return heapq.heapreplace(self.h, (self.key(item), item))[1]
+            return heapq.heapreplace(self._heap, (self.key(item), item))[1]
     def consume(self):
         """Outputs the heap as a sorted iterator.
         Consumes heap while doing so"""
-        while self.h:
+        while self._heap:
             yield self.pop()
     def verify(self):
         """Verifies my heapiness."""
-        length = len(self.h)
-        for index, val in enumerate(self.h):
+        length = len(self._heap)
+        for index, val in enumerate(self._heap):
             left_child = index*2 + 1
-            if left_child >= length: break
-            if self.h[left_child] < val: return False
+            if left_child >= length:
+                break
+            if self._heap[left_child] < val:
+                return False
             right_child = left_child + 1
-            if right_child >= length: break
-            if self.h[right_child] < val: return False
+            if right_child >= length:
+                break
+            if self._heap[right_child] < val:
+                return False
         return True
