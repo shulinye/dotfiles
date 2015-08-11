@@ -2,6 +2,7 @@
 
 import feedparser
 import re
+import sys
 
 FEED = "https://pypi.python.org/pypi?%3Aaction=rss"
 
@@ -24,4 +25,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('packages', nargs='*')
     args = parser.parse_args()
-    pypi(FEED, set(args.packages))
+    if sys.stdin.isatty():
+        stdin = []
+    else:
+        stdin = [i.strip() for i in sys.stdin]
+    pypi(FEED, package = set(args.packages).union(stdin))

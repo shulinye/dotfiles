@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 class Hangman(object):
+    """Ascii representation of hangman"""
     hangman = [
             r'|----------|---',
             r'|          |   ',

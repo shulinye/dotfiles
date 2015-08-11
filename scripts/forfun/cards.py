@@ -13,7 +13,7 @@ class Card(object):
     """Virtual playing card"""
     suit_map = ['Clubs','Diamonds', 'Hearts', 'Spades']
     rank_map = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
-    def __init__(self, suit, rank):
+    def __init__(self, suit: int, rank: int):
         self.suit = suit
         self.rank = rank
     def __repr__(self):
@@ -41,11 +41,17 @@ class Deck(deque):
         else:
             self.extend(cards)
         shuffle(self)
-    def deal(self, n=2):
-        hands = [Deck([]) for _ in range(n)]
-        while self:
-            for i in hands:
-                i.appendleft(super().popleft(self))
+    def deal(self, pile_count : int = 2, card_count = None):
+        """Deals out deck into seperate piles"""
+        hands = [Deck([]) for _ in range(pile_count)]
+        if card_count is None:
+            card_count = len(self)
+        try:
+            for _ in range(card_count):
+                for i in hands:
+                    i.appendleft(super().popleft(self))
+        except IndexError:
+            pass
         return hands
     def shuffle(self):
         shuffle(self)
