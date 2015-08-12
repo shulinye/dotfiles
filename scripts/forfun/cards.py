@@ -34,9 +34,9 @@ class Card(object):
 
 class Deck(deque):
     """A deck of cards. Uses python's deque"""
-    def __init__(self, cards = None):
+    def __init__(self, cards = None, decks = 1):
         if cards is None:
-            for i,j in product(range(4), range(13)):
+            for i,j,_ in product(range(4), range(13), range(decks)):
                 self.append(Card(i,j))
         else:
             self.extend(cards)

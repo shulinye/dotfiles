@@ -6,6 +6,7 @@ from os import path
 if __name__ == "__main__" and __package__ is None:
     sys.path.append(path.dirname(path.dirname(path.realpath(__file__))))
 
+from collections import Counter
 from enum import Enum
 import re
 from pythonutils import autorepr
@@ -13,6 +14,8 @@ from pythonutils import autorepr
 BASEPATH = path.dirname(path.realpath(__file__))
 ELEMENT_FILE = path.join(BASEPATH, "elements.txt")
 MOLECULAR_WEIGHT_FILE = path.join(BASEPATH, "molecular_weights.txt")
+
+re_formula = re.compile(r'([A-Z][a-z]*)(\d*)')
 
 class Conversions(Enum):
     re_format = re.compile(r'(\d+)\s*([a-z]+)')
@@ -49,6 +52,11 @@ with open(MOLECULAR_WEIGHT_FILE) as f:
     for i in f:
         k,v = i.split(" = ")
         chemicals[k] = float(v)
+
+def parse_formula(formula: str):
+    """Simple formula parser, does not handle parens"""
+    f = re_formula.findall(formula)
+    return Counter({elements[elem]: 1 if num == '' else int(num) for elem, num in f})
 
 def fluid_needed(molarity : float, mw : float , mass : float) -> float:
     """How much liquid do you need for a solution of a specific molarity?"""

@@ -29,7 +29,6 @@ filetype plugin indent on
 set cursorline
 " }}}
 
-
 """Text things (defaults){{{
 set tabstop=4 " a tab is four spaces
 set softtabstop=4 " when hitting <BS>, pretend like a tab is removed, even if spaces
@@ -117,7 +116,6 @@ set hidden
 
 " Set current working directory based on current file.
 autocmd BufEnter * lcd %:p:h
-
 
 " Map forward/backward buffer navigation.
 map <C-right> <ESC>:bn<CR>

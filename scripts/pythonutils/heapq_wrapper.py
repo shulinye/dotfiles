@@ -6,9 +6,10 @@ import heapq
 
 __all__ = ['Heap']
 
+
 class Heap(object):
     """Wrapper around python's heapq module"""
-    def __init__(self, heap = None, key = None):
+    def __init__(self, heap=None, key=None):
         if heap is None:
             self._heap = []
         elif key is None:
@@ -17,8 +18,10 @@ class Heap(object):
             self._heap = [(key(i), i) for i in heap]
         heapq.heapify(self._heap)
         self.key = key
+
     def __len__(self):
         return len(self._heap)
+
     def __contains__(self, item):
         if self.key is None:
             return item in self._heap
@@ -27,18 +30,19 @@ class Heap(object):
                 if item == value:
                     return True
             return False
+
     def __repr__(self):
-        s =  '<' + self.__class__.__name__
+        s = '<' + self.__class__.__name__
         if self.key:
-            s += " with key " + self.key.__name__
-            s += ": " + ", ".join(repr(value) for _, value in self._heap[:10])
+            s += " with key {}: {}".format(self.key.__name__, ", ".join(repr(value) for _, value in self._heap[:10]))
         else:
             s += ": " + ", ".join(repr(value) for value in self._heap[:10])
         if len(self._heap) > 10:
             s += "..."
         s += '>'
         return s
-    def pop(self, index = None):
+
+    def pop(self, index=None):
         """Removes the item at index and returns it,
         keeping the heap invariant
         
@@ -54,11 +58,13 @@ class Heap(object):
             return val[1]
         else:
             return val
+
     def push(self, item):
         if self.key is None:
             heapq.heappush(self._heap, item)
         else:
             heapq.heappush(self._heap, (self.key(item), item))
+
     def pushpop(self, item):
         """Push, then pop
         
@@ -67,7 +73,8 @@ class Heap(object):
             return heapq.heappushpop(self._heap, item)
         else:
             return heapq.heappushpop(self._heap, (self.key(item), item))[1]
-    def heapify(self, key = None):
+
+    def heapify(self, key=None):
         """Heapifies the heap. If optional parameter
         key is supplied, uses that as the key"""
         if key is None:
@@ -78,13 +85,16 @@ class Heap(object):
             self._heap = [(key(value), value) for _, value in self._heap]
         self.key = key
         heapq.heapify(self._heap)
+
     def rekey(self, key):
+        """Changes the key of the heap and re-heapifies it"""
         if key is None:
             self._heap = [value for _, value in self._heap]
             self.key = None
             heapq.heapify(self._heap)
         else:
             self.heapify(key)
+
     def replace(self, item):
         """Pop, then push
         
@@ -93,11 +103,13 @@ class Heap(object):
             return heapq.heapreplace(self._heap, item)
         else:
             return heapq.heapreplace(self._heap, (self.key(item), item))[1]
+
     def consume(self):
         """Outputs the heap as a sorted iterator.
         Consumes heap while doing so"""
         while self._heap:
             yield self.pop()
+
     def verify(self):
         """Verifies my heapiness."""
         length = len(self._heap)

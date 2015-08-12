@@ -20,10 +20,10 @@ def autorepr(obj=None, *, params=None):
         if inspected: params = list(params)[1:] #drop the first argument, that's self
         s = "def __repr__(self):\n    return '%s(" + ", ".join(["%s"]*(len(params)))
         s += ")' % (self.__class__.__name__, "
-        s += ', '.join("'%s=' + repr(self.%s)" % (i, i) for i in params) + ')'
+        s += ', '.join("'{0}=%r' % self.{0}".format(i) for i in params) + ')'
         scope = {}
         exec(s, scope)
         setattr(obj, '__repr__', scope['__repr__'])
         return obj
     else: #Being a normal function here :P
-        return "%s(%s)" % (obj.__class__.__name__, ", ".join("%s=%s" % (i, repr(getattr(obj,i))) for i in params))
+        return "%s(%s)" % (obj.__class__.__name__, ", ".join("%s=%r" % (i, getattr(obj,i)) for i in params))
