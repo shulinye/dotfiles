@@ -31,3 +31,16 @@ def get_stock_values(*stocks, flags=['n','s','l1','o','p']):
         if i != '':
             res = map(lambda x: try_convert(x.replace('"', '')), i.split(','))
             yield dict(zip(map(FLAGS.__getitem__, flags), res))
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('stocks', nargs='+')
+    for f, name in FLAGS.items():
+        parser.add_argument('--' + f, help=name, action='store_true')
+    args = parser.parse_args()
+    choices = list(filter(lambda x: getattr(args,x), FLAGS)) or ['l1','o','p']
+    choices += ['n','s']
+    ret = get_stock_values(*args.stocks, flags = choices)
+    for i in ret:
+        print(i)
