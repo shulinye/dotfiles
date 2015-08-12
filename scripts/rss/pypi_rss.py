@@ -1,6 +1,7 @@
 #/usr/bin/python3
 
 import feedparser
+import itertools
 import re
 import sys
 
@@ -28,5 +29,5 @@ if __name__ == "__main__":
     if sys.stdin.isatty():
         stdin = []
     else:
-        stdin = [i.strip() for i in sys.stdin]
+        stdin = [i.strip() for i in itertools.takewhile(lambda x: x.strip(), sys.stdin)]
     pypi(FEED, package = set(args.packages).union(stdin))

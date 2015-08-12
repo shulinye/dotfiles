@@ -18,9 +18,9 @@ def autorepr(obj=None, *, params=None):
         inspected = True
     if isinstance(obj,type): #I'm being used as a decorator
         if inspected: params = list(params)[1:] #drop the first argument, that's self
-        s = "def __repr__(self):\n    return '%s(" + ", ".join(["%s"]*(len(params)))
+        s = "def __repr__(self):\n    return '%s(" + ", ".join(["%s=%r"]*(len(params)))
         s += ")' % (self.__class__.__name__, "
-        s += ', '.join("'{0}=%r' % self.{0}".format(i) for i in params) + ')'
+        s += ', '.join("'{0}', self.{0}".format(i) for i in params) + ')'
         scope = {}
         exec(s, scope)
         setattr(obj, '__repr__', scope['__repr__'])
