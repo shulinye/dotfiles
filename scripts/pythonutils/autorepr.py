@@ -12,12 +12,17 @@ def autorepr(obj=None, *, params=None):
     Can be used as a class decorator or by setting
     __repr__ = autorepr"""
     if obj is None: return partial(autorepr, params = params)
-    if not params:
+    if params:
+        discard_first = False
+    elif hasattr(obj, '__slots__'):
+        params = obj.__slots__
+        discard_first = False
+    else:
         sig = inspect.signature(obj.__init__)
         params = sig.parameters
-        inspected = True
+        discard_first = True
     if isinstance(obj,type): #I'm being used as a decorator
-        if inspected: params = list(params)[1:] #drop the first argument, that's self
+        if discard_first: params = list(params)[1:] #drop the first argument, that's self
         s = "def __repr__(self):\n    return '%s(" + ", ".join(["%s=%r"]*(len(params)))
         s += ")' % (self.__class__.__name__, "
         s += ', '.join("'{0}', self.{0}".format(i) for i in params) + ')'
