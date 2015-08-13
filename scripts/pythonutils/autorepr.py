@@ -4,7 +4,22 @@ from functools import partial
 import inspect
 import types
 
-__all__ = ['autorepr']
+__all__ = ['autoinit', 'autorepr']
+
+def autoinit(cls=None, *, params=None):
+    """Takes __slots__ and _slots and writes an __init__"""
+    if cls is None: return partial(autoinit, params=params)
+    if params is None:
+        try:
+            params = getattr(cls, '__slots__') if hasattr(cls, '__slots__') else getattr(cls, '_slots')
+        except AttributeError:
+            raise RuntimeError("Can't autocreate __init__, please supply '__slots__' or '_slots'")
+    s = "def __init__(self,{}):\n    ".format(", ".join(i for i in params))
+    s += "\n    ".join("self.{0} = {0}".format(i) for i in params)
+    scope = {}
+    exec(s, scope)
+    setattr(cls, '__init__', scope['__init__'])
+    return cls
 
 def autorepr(obj=None, *, params=None):
     """Function that automagically gives you a __repr__.

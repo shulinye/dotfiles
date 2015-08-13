@@ -40,7 +40,7 @@ class Deck(deque):
                 self.append(Card(i,j))
         else:
             self.extend(cards)
-        shuffle(self)
+        self.shuffle()
     def deal(self, pile_count : int = 2, card_count = None):
         """Deals out deck into seperate piles"""
         hands = [Deck([]) for _ in range(pile_count)]
@@ -54,7 +54,11 @@ class Deck(deque):
             pass
         return hands
     def shuffle(self):
-        shuffle(self)
+        li = list(self)
+        shuffle(li)
+        self.clear()
+        for i in li:
+            self.append(i)
     def popleft(self, n = 1):
         return [super(Deck, self).popleft() for _ in range(n)]
     def pop(self, n = 1):
