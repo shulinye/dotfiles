@@ -49,10 +49,11 @@ class Heap(object):
         if index is None, pops smallest element"""
         if index is None:
             val = heapq.heappop(self._heap)
+        elif index == len(self._heap) - 1: #asking for the last element
+            val = self._heap.pop()
         else:
             val = self._heap[index]
-            self._heap[index] = self._heap[-1]
-            self._heap.pop()
+            self._heap[index] = self._heap.pop()
             heapq._siftup(self._heap, index)
         if self.key:
             return val[1]
