@@ -18,6 +18,20 @@ def coerced_input(prompt, _type = float):
         except ValueError:
             pass
 
+if sys.platform not in ('win32', 'cygwin'):
+    import signal
+    __all__.append('input_with_timeout')
+    def input_with_timeout(prompt, timeout):
+        """Times out input after a certain number of seconds. Linux/Mac version, uses signals"""
+        old_handler = signal.signal(signal.SIGALRM, lambda x,y: (_ for _ in '').throw(TimeoutError))
+        signal.alarm(timeout)
+        try:
+            return input(prompt)
+        finally:
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, old_handler)
+    #//TODO: perhaps a windows variant?
+
 if sys.version_info.major <= 2:
     from string import maketrans
     def gen_translation_table(intake,output):

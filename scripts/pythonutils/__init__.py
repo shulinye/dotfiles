@@ -2,7 +2,7 @@
 """Various useful utilties for python"""
 
 from .autorepr import *
-from .coerced_input import *
+from .input_utils import *
 from .colorful import *
 from .context import *
 from .filing import *

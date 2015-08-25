@@ -173,19 +173,21 @@ class Timeout(object):
             logging.log(self.loglevel, repr(inspect.getframeinfo(frame)))
         raise TimeoutError(self.error_message)
     def __enter__(self):
-        signal.signal(signal.SIGALRM, self.handle)
+        self.old_handle = signal.signal(signal.SIGALRM, self.handle)
         signal.alarm(self.seconds)
     def __exit__(self, etype, value, traceback):
         signal.alarm(0)
+        signal.signal(signal.SIGALRM, self.old_handle)
     def __call__(self, func):
         @wraps(func)
         def decorated(*args, **kwargs):
-            signal.signal(signal.SIGALRM, self.handle)
+            old_handle = signal.signal(signal.SIGALRM, self.handle)
             signal.alarm(self.seconds)
             try:
                 ret = func(*args, **kwargs)
             finally:
                 signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handle)
             return ret
         if decorated.__doc__: decorated.__doc__ += "\n Timeout: %s" % self.seconds
         else: decorated.__doc__ = "With timeout: %s" % self.seconds
