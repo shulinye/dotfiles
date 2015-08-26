@@ -45,7 +45,7 @@ class Deck(deque):
         """Deals out deck into seperate piles"""
         hands = [Deck([]) for _ in range(pile_count)]
         if card_count is None:
-            card_count = len(self)
+            card_count = len(self)//hands + 1
         try:
             for _ in range(card_count):
                 for i in hands:

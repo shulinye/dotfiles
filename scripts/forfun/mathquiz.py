@@ -1,5 +1,6 @@
 #/usr/bin/env python3
 
+from fractions import Fraction
 import operator
 import random
 import signal
@@ -25,14 +26,14 @@ def input_with_timeout(prompt, timeout=TIMEOUT):
         signal.signal(signal.SIGALRM, old_handler)
 
 def ask_question(timeout=TIMEOUT):
-    a,b,c = [random.randint(10) for _ in range(3)]
+    a,b,c = [Fraction(random.randint(0,10),1) for _ in range(3)]
     op1, op2 = random.sample(list(mapping),2)
     ans = mapping[op2](mapping[op1](a,b), c)
     try:
         prompt = "(%d %s %d) %s %d = " % (a, op1, b, op2, c)
         userans = input_with_timeout(prompt, timeout)
         if "exit" in userans: raise KeyboardInterrupt
-        if abs(ans - float(userans)) < 0.001:
+        if abs(ans - Fraction(userans)) < 0.001:
             print("Correct!")
             return True
     except TimeoutError:
@@ -51,21 +52,19 @@ def main(timeout=TIMEOUT):
     try:
         while True:
             try:
-                if ask_question(timeout=TIMEOUT):
+                if ask_question(timeout=timeout):
                     score += 1
                 else:
                     incorrect += 1
             except TimeoutError:
                 timedout_count += 1
-            except ValueError:
-                pass
-            except ZeroDivisionError:
+            except (ValueError, ZeroDivisionError):
                 pass
             sleep(0.1)
     except KeyboardInterrupt:
-        print('\nCorrect answers: {}\nIncorrect: {}\nTimed out: {}'.format(score, incorrect, timedout_count))
+        print('\n--------\nCorrect answers: {}\nIncorrect: {}\nTimed out: {}'.format(score, incorrect, timedout_count))
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) >1 : main(float(sys.argv[1]))
+    if len(sys.argv) >1 : main(int(sys.argv[1]))
     else: main()
