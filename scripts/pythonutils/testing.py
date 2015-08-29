@@ -107,11 +107,10 @@ class TheShowMustGoOn(object):
         self.level = level
         self.prefix = prefix
     def __call__(self, obj):
-        if isinstance(obj, type):
-            #I'm a class
-            for key, val in vars(obj).items():
+        if inspect.isclass(obj):
+            for name, val in inspect.getmembers(obj, inspect.isroutine):
                 if hasattr(val, '__call__'):
-                    setattr(obj, key, self(val))
+                    setattr(obj, name, self(val))
             return obj
         @wraps(obj)
         def decorated(*args, **kwargs):

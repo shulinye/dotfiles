@@ -8,21 +8,26 @@ import tempfile
 from .autorepr import autorepr
 __all__ = ['RedirectStreams', 'TeeStreams', 'Tee', 'LoggerFilelike', 'LogStderr']
 
-def validate_init(self, *, stdout=None, stderr=None, noclobber=False, use_temp=False, mode='w'):
-    self.use_temp = use_temp
-    self.mode = mode
-    self.noclobber = noclobber
-    if noclobber:
-        for i in stdout, stderr:
-            if i is not None and os.path.lexists(i):
-                raise RuntimeError("%s already exists" % i)
-    self.stdout = stdout
-    self.stderr = stderr
-
 @autorepr
-class RedirectStreams(object):
+class ValidatedStreamToFile(object):
+    def __init__(self, *, stdout=None, stderr=None, noclobber=False, use_temp=False, mode='w'):
+        self.use_temp = use_temp
+        self.mode = mode
+        self.noclobber = noclobber
+        if noclobber:
+            for i in stdout, stderr:
+                if i is not None and os.path.lexists(i):
+                    raise RuntimeError("File '%s' already exists" % i)
+        self.stdout = stdout
+        self.stderr = stderr
+
+def replace_streams():
+    sys.stdout.flush() ; sys.stderr.flush()
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
+
+class RedirectStreams(ValidatedStreamToFile):
     """Redirect the standard streams somewhere"""
-    __init__ = validate_init
     def reset(self):
         self.files = [None,None]
         self.tmppaths = [None,None]
@@ -54,9 +59,7 @@ class RedirectStreams(object):
             sys.stderr.flush()
             sys.stderr = self.files[1]
     def __exit__(self, etype, value, trace):
-        sys.stdout.flush() ; sys.stderr.flush()
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
+        replace_streams()
         if self.use_temp:
             for tmpfile, path, dest in zip(self.files, self.tmppaths, [self.stdout, self.stderr]):
                 if tmpfile:
@@ -79,10 +82,8 @@ class Tee(object):
     def __repr__(self):
         return self.__class__.__name__ + "\n\t".join(repr(i) for i in self.outputs)
 
-@autorepr
-class TeeStreams(object):
+class TeeStreams(ValidatedStreamToFile):
     """Tee the standard streams to a file."""
-    __init__ = validate_init
     def reset(self):
         self.tees = [None, None]
         self.files = [None, None]
@@ -118,9 +119,7 @@ class TeeStreams(object):
             sys.stderr.flush()
             sys.stderr = self.tees[1]
     def __exit__(self, etype, value, trace):
-        sys.stdout.flush() ; sys.stderr.flush()
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
+        replace_streams()
         if self.use_temp:
             for tmpfile, path, dest in zip(self.files, self.tmppaths, [self.stdout, self.stderr]):
                 if tmpfile:

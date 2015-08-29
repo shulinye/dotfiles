@@ -36,7 +36,7 @@ def autorepr(obj=None, *, params=None):
         sig = inspect.signature(obj.__init__)
         params = sig.parameters
         discard_first = True
-    if isinstance(obj,type): #I'm being used as a decorator
+    if inspect.isclass(obj): #I'm being used as a decorator
         if discard_first: params = list(params)[1:] #drop the first argument, that's self
         s = ["def __repr__(self):\n    return '%s(" + ", ".join(["%s=%r"]*(len(params)))]
         s.append(")' % (self.__class__.__name__, ")
