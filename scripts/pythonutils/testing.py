@@ -12,9 +12,9 @@ import types
 
 from .autorepr import autorepr
 
-__all__ = ['setup', 'sloppy_run', 'typecheck', 'type_validate', 'TheShowMustGoOn', 'limited_globals', 'Timeout']
+__all__ = ['testing_setup', 'sloppy_run', 'typecheck', 'type_validate', 'TheShowMustGoOn', 'limited_globals', 'Timeout']
 
-def setup():
+def testing_setup():
     """Default setup for logging"""
     LOG_FILENAME =  getattr(__main__,"__file__","unknown.").split('.')[0] + "." + datetime.datetime.now().isoformat() + ".log"
     logging.basicConfig(filename=LOG_FILENAME,level=logging.DEBUG)

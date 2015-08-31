@@ -14,10 +14,10 @@ def autoinit(cls=None, *, params=None):
             params = getattr(cls, '__slots__') if hasattr(cls, '__slots__') else getattr(cls, '_slots')
         except AttributeError:
             raise RuntimeError("Can't autocreate __init__, please supply '__slots__' or '_slots'")
-    s = "def __init__(self,{}):\n    ".format(", ".join(i for i in params))
-    s += "\n    ".join("self.{0} = {0}".format(i) for i in params)
+    s = ["def __init__(self,{}):".format(", ".join(i for i in params))]
+    s.extend("self.{0} = {0}".format(i) for i in params)
     scope = {}
-    exec(s, scope)
+    exec('\n    '.join(s), scope)
     setattr(cls, '__init__', scope['__init__'])
     return cls
 
@@ -41,9 +41,8 @@ def autorepr(obj=None, *, params=None):
         s = ["def __repr__(self):\n    return '%s(" + ", ".join(["%s=%r"]*(len(params)))]
         s.append(")' % (self.__class__.__name__, ")
         s.append(', '.join("'{0}', self.{0}".format(i) for i in params) + ')')
-        s = "".join(s)
         scope = {}
-        exec(s, scope)
+        exec("".join(s), scope)
         setattr(obj, '__repr__', scope['__repr__'])
         return obj
     else: #Being a normal function here :P
@@ -65,8 +64,7 @@ def total_compare_by_key(cls=None, *, key=None, check_type=True):
             s.append("if not isinstance(other, self.__class__):")
             s.append("    raise TypeError('unorderable types, %s {} %s' % (type(self).__name__, type(other).__name__))".format(symbol))
         s.append("return self.{k} {symbol} other.{k}".format(k=key, symbol=symbol))
-        s = "\n    ".join(s)
         scope = {}
-        exec(s, scope)
+        exec("\n    ".join(s), scope)
         setattr(cls, dunder, scope[dunder])
     return cls

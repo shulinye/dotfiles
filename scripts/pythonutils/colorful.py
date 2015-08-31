@@ -4,7 +4,7 @@ __all__ = ['color', 'ColorBlock']
 
 import colorama
 from functools import wraps
-from .autorepr import autorepr
+from .autorepr import antoinit, autorepr
 
 colorama.init()
 
@@ -21,10 +21,9 @@ class color(object):
    END = '\033[0m'
 
 @autorepr
+@autoinit
 class ColorBlock(object):
     __slots__= ['colorcode']
-    def __init__(self, colorcode):
-        self.colorcode = colorcode
     def __enter__(self):
         print(getattr(color, self.colorcode, self.colorcode), end='')
     def __exit__(self, etype, val, trace):

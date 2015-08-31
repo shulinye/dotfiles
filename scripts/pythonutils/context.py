@@ -21,10 +21,10 @@ class ValidatedStreamToFile(object):
         self.stdout = stdout
         self.stderr = stderr
 
-def replace_streams():
-    sys.stdout.flush() ; sys.stderr.flush()
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+    def replace_streams(self):
+        sys.stdout.flush() ; sys.stderr.flush()
+        sys.stdout = self.original_stdout
+        sys.stderr = self.original_stderr
 
 class RedirectStreams(ValidatedStreamToFile):
     """Redirect the standard streams somewhere"""
@@ -42,11 +42,13 @@ class RedirectStreams(ValidatedStreamToFile):
             else:
                 self.files[0] = open(self.stdout, self.mode)
             sys.stdout.flush()
+            self.original_stdout = sys.stdout
             sys.stdout = self.files[0]
         if self.stderr is None:
             pass
         elif self.stderr == self.stdout:
             sys.stderr.flush()
+            self.original_stderr = sys.stderr
             sys.stderr = self.files[0]
         else:
             if self.noclobber and os.path.lexists(self.stderr):
@@ -57,9 +59,10 @@ class RedirectStreams(ValidatedStreamToFile):
             else:
                 self.files[1] = open(self.stderr, self.mode)
             sys.stderr.flush()
+            self.original_stderr = sys.stderr
             sys.stderr = self.files[1]
     def __exit__(self, etype, value, trace):
-        replace_streams()
+        self.replace_streams()
         if self.use_temp:
             for tmpfile, path, dest in zip(self.files, self.tmppaths, [self.stdout, self.stderr]):
                 if tmpfile:
@@ -100,12 +103,14 @@ class TeeStreams(ValidatedStreamToFile):
                 self.files[0] = open(self.stdout, self.mode)
             self.tees[0] = Tee(sys.stdout, self.files[0])
             sys.stdout.flush()
+            self.original_stdout = sys.stdout
             sys.stdout = self.tees[0]
         if self.stderr is None:
             pass
         elif self.stderr == self.stdout:
             self.tees[1] = Tee(sys.stderr, f)
             sys.stderr.flush()
+            self.original_stderr = sys.stderr
             sys.stderr = self.tees[1]
         else:
             if self.noclobber and os.path.lexists(self.stderr):
@@ -117,9 +122,10 @@ class TeeStreams(ValidatedStreamToFile):
                 self.files[1] = open(self.stderr, self.mode)
             self.tees[1] = Tee(sys.stderr, self.files[1])
             sys.stderr.flush()
+            self.original_stderr = sys.stderr
             sys.stderr = self.tees[1]
     def __exit__(self, etype, value, trace):
-        replace_streams()
+        self.replace_streams()
         if self.use_temp:
             for tmpfile, path, dest in zip(self.files, self.tmppaths, [self.stdout, self.stderr]):
                 if tmpfile:

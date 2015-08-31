@@ -32,15 +32,15 @@ class Heap(object):
             return False
 
     def __repr__(self):
-        s = '<' + self.__class__.__name__
+        s = ['<' + self.__class__.__name__]
         if self.key:
-            s += " with key {}: {}".format(self.key.__name__, ", ".join(repr(value) for _, value in self._heap[:10]))
+            s.append(" with key {}: {}".format(self.key.__name__, ", ".join(repr(value) for _, value in self._heap[:10])))
         else:
-            s += ": " + ", ".join(repr(value) for value in self._heap[:10])
+            s.append(": " + ", ".join(repr(value) for value in self._heap[:10]))
         if len(self._heap) > 10:
-            s += "..."
-        s += '>'
-        return s
+            s.append("...")
+        s.append('>')
+        return ''.join(s)
 
     def pop(self, index=None):
         """Removes the item at index and returns it,
