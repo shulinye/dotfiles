@@ -6,20 +6,20 @@ import types
 
 __all__ = ['autoinit', 'autorepr', 'total_compare_by_key']
 
-def autoinit(cls=None, *, params=None):
+def autoinit(obj=None, *, params=None):
     """Takes __slots__ and _slots and writes an __init__"""
-    if cls is None: return partial(autoinit, params=params)
+    if obj is None: return partial(autoinit, params=params)
     if params is None:
         try:
-            params = getattr(cls, '__slots__') if hasattr(cls, '__slots__') else getattr(cls, '_slots')
+            params = getattr(obj, '__slots__') if hasattr(obj, '__slots__') else getattr(obj, '_slots')
         except AttributeError:
             raise RuntimeError("Can't autocreate __init__, please supply '__slots__' or '_slots'")
     s = ["def __init__(self,{}):".format(", ".join(i for i in params))]
     s.extend("self.{0} = {0}".format(i) for i in params)
     scope = {}
     exec('\n    '.join(s), scope)
-    setattr(cls, '__init__', scope['__init__'])
-    return cls
+    setattr(obj, '__init__', scope['__init__'])
+    return obj
 
 def autorepr(obj=None, *, params=None):
     """Function that automagically gives you a __repr__.
@@ -60,6 +60,7 @@ def total_compare_by_key(cls=None, *, key=None, check_type=True):
                  '__eq__': '==',
                  '__ne__': '!='}
     for dunder, symbol in orderings.items():
+        if dunder in cls.__dict__: continue
         s = ["def {dunder}(self, other):".format(dunder=dunder)]
         if check_type:
             s.append("if not isinstance(other, self.__class__):")

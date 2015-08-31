@@ -19,11 +19,10 @@ class FuncParser(argparse.ArgumentParser):
         self.mapping = {}
         self.param_map = {}
         if funclist: self.add_functions(*funclist)
-    def __repr__(self):
-        s = [super().__repr__()[:-1]]
-        s.append(', funclist=%s' % ('[%s]' % (', '.join(i.__qualname__ for i in self.mapping.values())) if self.mapping else 'None'))
-        s.append(')')
-        return "".join(s)
+    def _get_kwargs(self):
+        s = super()._get_kwargs()
+        s.append(('funclist', list(i.__qualname__ for i in self.mapping.values()) if self.mapping else None))
+        return s
     def add_functions(self, *funclist):
         for func in funclist:
             self.mapping[func.__name__] = func

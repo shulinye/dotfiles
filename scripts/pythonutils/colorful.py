@@ -4,7 +4,7 @@ __all__ = ['color', 'ColorBlock']
 
 import colorama
 from functools import wraps
-from .autorepr import antoinit, autorepr
+from .autorepr import autoinit, autorepr
 
 colorama.init()
 
