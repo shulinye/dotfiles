@@ -10,7 +10,7 @@ def nonempty(item):
     return item if item != inspect._empty else None
 
 class FuncParser(argparse.ArgumentParser):
-    def __init__(self, *args, funclist=None, description = None, **kwargs):
+    def __init__(self, *args, funclist=None, description=None, **kwargs):
         if description is None:
             description = inspect.getdoc(__main__)
         super().__init__(*args, description=description, **kwargs)
@@ -19,6 +19,11 @@ class FuncParser(argparse.ArgumentParser):
         self.mapping = {}
         self.param_map = {}
         if funclist: self.add_functions(*funclist)
+    def __repr__(self):
+        s = [super().__repr__()[:-1]]
+        s.append(', funclist=%s' % ('[%s]' % (', '.join(i.__qualname__ for i in self.mapping.values())) if self.mapping else 'None'))
+        s.append(')')
+        return "".join(s)
     def add_functions(self, *funclist):
         for func in funclist:
             self.mapping[func.__name__] = func

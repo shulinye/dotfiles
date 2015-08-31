@@ -24,6 +24,7 @@ def autoinit(cls=None, *, params=None):
 def autorepr(obj=None, *, params=None):
     """Function that automagically gives you a __repr__.
     If no params are given, inspects __init__
+
     Can be used as a class decorator or by setting
     __repr__ = autorepr"""
     if obj is None: return partial(autorepr, params = params)
