@@ -3,6 +3,7 @@
 from collections import OrderedDict
 from functools import partial
 import inspect
+import itertools
 import types
 
 __all__ = ['autoinit', 'autorepr', 'total_compare_by_key']
@@ -15,7 +16,7 @@ def autoinit(obj=None, *args, params=None, **kwargs):
     if obj is None: return partial(autoinit, params=params)
     if params is None:
         try:
-            params = getattr(obj, '__slots__') if hasattr(obj, '__slots__') else getattr(obj, '_slots')
+            params = getattr(obj, '__slots__', obj._slots)
         except AttributeError:
             raise RuntimeError("Can't autocreate __init__, please supply '__slots__' or '_slots'")
     if inspect.isclass(obj): #I'm being used as a decorator
@@ -26,12 +27,9 @@ def autoinit(obj=None, *args, params=None, **kwargs):
         setattr(obj, '__init__', scope['__init__'])
         return obj
     else:
-        params = [inspect.Parameter(i, inspect.Parameter.POSITIONAL_OR_KEYWORD) for i in params]
-        signature = inspect.Signature(params)
+        signature = inspect.Signature(inspect.Parameter(i, inspect.Parameter.POSITIONAL_OR_KEYWORD) for i in params)
         signature.bind(*args, **kwargs)
-        for p, val in zip(params, args):
-            setattr(obj, p.name, val)
-        for p, val in kwargs.items():
+        for p, val in itertools.chain(zip(params, args), kwargs.items()):
             setattr(obj, p, val)
 
 def autorepr(obj=None, *, params=None):
@@ -42,16 +40,13 @@ def autorepr(obj=None, *, params=None):
     __repr__ = autorepr"""
     if obj is None: return partial(autorepr, params = params)
     discard_first = False
-    if params:
-        pass
-    elif hasattr(obj, '__slots__'):
-        params = obj.__slots__
-    elif hasattr(obj, '_slots'):
-        params = obj._slots
-    else:
-        sig = inspect.signature(obj.__init__)
-        params = sig.parameters
-        discard_first = True
+    if params is None:
+        try:
+            params = getattr(obj, '__slots__', obj._slots)
+        except AttributeError:
+            sig = inspect.signature(obj.__init__)
+            params = sig.parameters
+            discard_first = True
     if inspect.isclass(obj): #I'm being used as a decorator
         if discard_first: params = list(params)[1:] #drop the first argument, that's self
         s = ["def __repr__(self):\n    return '%s(" + ", ".join(["%s=%r"]*(len(params)))]
