@@ -1,25 +1,38 @@
 #!/usr/bin/python3
 
+from collections import OrderedDict
 from functools import partial
 import inspect
 import types
 
 __all__ = ['autoinit', 'autorepr', 'total_compare_by_key']
 
-def autoinit(obj=None, *, params=None):
-    """Takes __slots__ and _slots and writes an __init__"""
+def autoinit(obj=None, *args, params=None, **kwargs):
+    """Takes __slots__ and _slots and writes an __init__
+    
+    Can be used as a class decorator, or by setting
+    __init__ = autoinit"""
     if obj is None: return partial(autoinit, params=params)
     if params is None:
         try:
             params = getattr(obj, '__slots__') if hasattr(obj, '__slots__') else getattr(obj, '_slots')
         except AttributeError:
             raise RuntimeError("Can't autocreate __init__, please supply '__slots__' or '_slots'")
-    s = ["def __init__(self,{}):".format(", ".join(i for i in params))]
-    s.extend("self.{0} = {0}".format(i) for i in params)
-    scope = {}
-    exec('\n    '.join(s), scope)
-    setattr(obj, '__init__', scope['__init__'])
-    return obj
+    if inspect.isclass(obj): #I'm being used as a decorator
+        s = ["def __init__(self,{}):".format(", ".join(i for i in params))]
+        s.extend("self.{0} = {0}".format(i) for i in params)
+        scope = {}
+        exec('\n    '.join(s), scope)
+        setattr(obj, '__init__', scope['__init__'])
+        return obj
+    else:
+        params = [inspect.Parameter(i, inspect.Parameter.POSITIONAL_OR_KEYWORD) for i in params]
+        signature = inspect.Signature(params)
+        signature.bind(*args, **kwargs)
+        for p, val in zip(params, args):
+            setattr(obj, p.name, val)
+        for p, val in kwargs.items():
+            setattr(obj, p, val)
 
 def autorepr(obj=None, *, params=None):
     """Function that automagically gives you a __repr__.
@@ -28,11 +41,13 @@ def autorepr(obj=None, *, params=None):
     Can be used as a class decorator or by setting
     __repr__ = autorepr"""
     if obj is None: return partial(autorepr, params = params)
+    discard_first = False
     if params:
-        discard_first = False
+        pass
     elif hasattr(obj, '__slots__'):
         params = obj.__slots__
-        discard_first = False
+    elif hasattr(obj, '_slots'):
+        params = obj._slots
     else:
         sig = inspect.signature(obj.__init__)
         params = sig.parameters
