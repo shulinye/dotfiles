@@ -11,6 +11,7 @@ mapping = {'+': operator.add,
            '-': operator.sub,
            '/': operator.truediv}
 
+operators = list(mapping)
 TIMEOUT = 10
 
 def handler(signum, frame):
@@ -27,7 +28,7 @@ def input_with_timeout(prompt, timeout=TIMEOUT):
 
 def ask_question(timeout=TIMEOUT):
     a,b,c = [Fraction(random.randint(0,10),1) for _ in range(3)]
-    op1, op2 = random.sample(list(mapping),2)
+    op1, op2 = random.sample(operators,2)
     ans = mapping[op2](mapping[op1](a,b), c)
     try:
         prompt = "(%d %s %d) %s %d = " % (a, op1, b, op2, c)
