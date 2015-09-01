@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 from collections import OrderedDict
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -40,4 +40,4 @@ def main(change, cents_in_dollar=10**PLACES):
 if __name__ == "__main__":
     for i in sys.argv[1:]:
         main(i)
-        print()
+        print("")
