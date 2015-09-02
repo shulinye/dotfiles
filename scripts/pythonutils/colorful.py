@@ -23,7 +23,7 @@ class color(object):
 @autorepr
 @autoinit
 class ColorBlock(object):
-    __slots__= ['colorcode']
+    __slots__= ('colorcode',)
     def __enter__(self):
         print(getattr(color, self.colorcode, self.colorcode), end='')
     def __exit__(self, etype, val, trace):

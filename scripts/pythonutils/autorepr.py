@@ -2,11 +2,15 @@
 
 from collections import OrderedDict
 from functools import partial
+from ordered_set import OrderedSet
 import inspect
 import itertools
 import types
 
+from .utils import walk_getattr
+
 __all__ = ['autoinit', 'autorepr', 'total_compare_by_key']
+
 
 def autoinit(obj=None, *args, params=None, **kwargs):
     """Takes __slots__ and _slots and writes an __init__
@@ -14,11 +18,14 @@ def autoinit(obj=None, *args, params=None, **kwargs):
     Can be used as a class decorator, or by setting
     __init__ = autoinit"""
     if obj is None: return partial(autoinit, params=params)
-    if params is None:
-        try:
-            params = getattr(obj, '__slots__', obj._slots)
-        except AttributeError:
-            raise RuntimeError("Can't autocreate __init__, please supply '__slots__' or '_slots'")
+    if params:
+        pass
+    elif hasattr(obj, '__slots__'):
+        params = OrderedSet(itertools.chain.from_iterable(walk_getattr(obj, '__slots__')))
+    elif hasattr(obj, '_slots'):
+        params = OrderedSet(itertools.chain.from_iterable(walk_getattr(obj, '_slots')))
+    else:
+        raise RuntimeError("Can't autocreate __init__, please supply '__slots__' or '_slots'")
     if inspect.isclass(obj): #I'm being used as a decorator
         s = ["def __init__(self,{}):".format(", ".join(i for i in params))]
         s.extend("self.{0} = {0}".format(i) for i in params)
@@ -34,19 +41,23 @@ def autoinit(obj=None, *args, params=None, **kwargs):
 
 def autorepr(obj=None, *, params=None):
     """Function that automagically gives you a __repr__.
-    If no params are given, inspects __init__
+    If no params are given, uses __slots__, _slots, and at last resort,
+    inspects __init__
 
     Can be used as a class decorator or by setting
     __repr__ = autorepr"""
     if obj is None: return partial(autorepr, params = params)
     discard_first = False
-    if params is None:
-        try:
-            params = getattr(obj, '__slots__', obj._slots)
-        except AttributeError:
-            sig = inspect.signature(obj.__init__)
-            params = sig.parameters
-            discard_first = True
+    if params:
+        pass
+    elif hasattr(obj, '__slots__'):
+        params = OrderedSet(itertools.chain.from_iterable(walk_getattr(obj, '__slots__')))
+    elif hasattr(obj, '_slots'):
+        params = OrderedSet(itertools.chain.from_iterable(walk_getattr(obj, '_slots')))
+    else:
+        sig = inspect.signature(obj.__init__)
+        params = sig.parameters
+        discard_first = True
     if inspect.isclass(obj): #I'm being used as a decorator
         if discard_first: params = list(params)[1:] #drop the first argument, that's self
         s = ["def __repr__(self):\n    return '%s(" + ", ".join(["%s=%r"]*(len(params)))]

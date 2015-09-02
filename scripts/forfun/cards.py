@@ -24,7 +24,7 @@ class Card(object):
     """Virtual playing card"""
     suit_map = ['Clubs','Diamonds', 'Hearts', 'Spades']
     rank_map = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
-    __slots__ = ['suit', 'rank']
+    __slots__ = ('suit', 'rank')
     def __str__(self):
         return '<%s: %s of %s>' % (self.__class__.__name__, self.rank_map[self.rank], self.suit_map[self.suit])
     def __eq__(self, other):
