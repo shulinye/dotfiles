@@ -1,2 +1,4 @@
 dateutils
 feedparser
+gcalcli
+parsedatetime

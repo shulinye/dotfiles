@@ -1,6 +1,6 @@
 #/usr/bin/env python
 
-__all__ = ['NullArgument', 'vgetattr']
+__all__ = ['NullArgument', 'vgetattr', 'walk_getattr']
 
 from contextlib import suppress
 
@@ -19,10 +19,11 @@ def vgetattr(obj, *attrs, default=NullArgument):
         raise AttributeError("%r has none of these attributes: %s" % (type(obj), ", ".join(attrs)))
     return default
 
-def walk_getattr(klass, attr):
-    """Walks the mro backwards, grabbing
+def walk_getattr(klass, attr, reverse=False):
+    """Walks the mro, grabbing
     the attr from each class that has it"""
-    for cls in reversed(klass.__mro__):
+    mro = reversed(klass.__mro__) if reverse else klass.__mro__
+    for cls in mro:
         with suppress(AttributeError):
             yield getattr(cls, attr)
 

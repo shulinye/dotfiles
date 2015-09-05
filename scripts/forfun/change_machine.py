@@ -26,8 +26,11 @@ def parse_money(money, places = PLACES):
 
 def change_machine(change, coins = coins):
     results = [0]*len(coins) #doing this and not appends to make tuple unpacking work
+    # bankers rounding, even in python2
+    change = int(Decimal(change).quantize(Decimal('1'), rounding=ROUND_HALF_EVEN))
     for index, coin in enumerate(coins):
         results[index], change = divmod(change, coin)
+        if change == 0: break
     return results
 
 def main(change, cents_in_dollar=10**PLACES):
