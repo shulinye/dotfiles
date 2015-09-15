@@ -180,14 +180,8 @@ class Timeout(object):
     def __call__(self, func):
         @wraps(func)
         def decorated(*args, **kwargs):
-            old_handle = signal.signal(signal.SIGALRM, self.handle)
-            signal.alarm(self.seconds)
-            try:
-                ret = func(*args, **kwargs)
-            finally:
-                signal.alarm(0)
-                signal.signal(signal.SIGALRM, old_handle)
-            return ret
+            with self:
+                return func(*args, **kwargs)
         if decorated.__doc__: decorated.__doc__ += "\n Timeout: %s" % self.seconds
         else: decorated.__doc__ = "With timeout: %s" % self.seconds
         return decorated

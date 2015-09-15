@@ -50,14 +50,13 @@ class DirectInput(object):
 
 direct_input = DirectInput()
 
-def coerced_input(prompt, _type = float):
+def coerced_input(prompt, type_ = float):
     """Continue asking user for input
     until they give one that's of a type
     I can use"""
     while True:
         try:
-            val = _type(input(prompt))
-            return val
+            return type_(input(prompt))
         except ValueError:
             pass
 

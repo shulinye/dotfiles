@@ -14,10 +14,10 @@ class TaskItem(object):
     """A class for tasks that's nestable."""
     re_detab = re.compile(r'^\t')
 
-    def __init__(self, task,  *tasks):
+    def __init__(self, task, *tasks):
         self.task = task.rstrip()
         if tasks:
-            paragraphs = self.make_paragraphs(self.re_detab.sub('', i) for i in tasks[1:])
+            paragraphs = self.make_paragraphs(self.re_detab.sub('', i) for i in tasks)
             self.subtasks = {TaskItem(*i) for i in paragraphs if i != ('',)}
         else:
             self.subtasks = set()

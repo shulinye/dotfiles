@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ../venv/bin/activate
+source ../dotfiles_venv/bin/activate
 
 HOME="/home/shulinye"
 NOTESDIR="$HOME/Notebooks/Notes"

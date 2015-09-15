@@ -31,8 +31,7 @@ class ColorBlock(object):
     def __call__(self, func):
         @wraps(func)
         def decorated(*args, **kwargs):
-            print(getattr(color, self.colorcode, self.colorcode), end='')
-            ret = func(*args, **kwargs)
-            print(colorama.Style.RESET_ALL, end='')
+            with self:
+                return func(*args, **kwargs)
             return ret
         return decorated

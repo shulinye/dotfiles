@@ -1,0 +1,23 @@
+ul.checklist {
+		list-style-type:none;
+}
+div.toc {
+		border: black 1px solid;
+		background-color:wheat;
+		position:fixed;
+		top: 1em;
+		left:720px;
+}
+
+div.toc > ul {
+		padding-left: 1.5em;
+		font-size:0.8em;
+}
+
+div.toc > ul ul {
+		padding-left: 1em;
+}
+
+p, ul {
+		max-width:700px;
+}

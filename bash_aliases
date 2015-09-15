@@ -1,9 +1,11 @@
 #!/usr/bin/bash
 alias yolo="sudo"
 alias :q="exit"
+alias :wq="exit"
 alias wq="exit"
 
 alias j="fasd_cd -d"
+
 function mkdate()
 {
     currentdate=$(date +%F)
@@ -17,6 +19,13 @@ function auxpdflatex()
 {
     echo "${1%.tex}.pdf"
     echo $pwd
+}
+
+function goto()
+{
+    file="$(f -l $1 | tail -n1)"
+    echo "$file"
+    cd "$(dirname $file)"
 }
 
 function tasks()
