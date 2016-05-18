@@ -19,11 +19,11 @@ def vgetattr(obj, *attrs, default=NullArgument):
         raise AttributeError("%r has none of these attributes: %s" % (type(obj), ", ".join(attrs)))
     return default
 
-def walk_getattr(klass, attr, reverse=False):
+def walk_getattr(klass, *attrs, reverse=False):
     """Walks the mro, grabbing
     the attr from each class that has it"""
     mro = reversed(klass.__mro__) if reverse else klass.__mro__
     for cls in mro:
         with suppress(AttributeError):
-            yield getattr(cls, attr)
+            yield vgetattr(cls, *attrs)
 

@@ -22,11 +22,13 @@ class TaskItem(object):
         else:
             self.subtasks = set()
 
-    def __add__(self, other : "TaskItem") -> "TaskItem":
+    def __add__(self, other : 'type(self)') -> 'type(self)':
         """Merges two TaskItems that have the same self.task"""
+        if not isinstance(other, self.__class__):
+            return NotImplemented
         if self.task != other.task:
             raise ValueError
-        newTask = TaskItem(self.task)
+        newTask = type(self)(self.task)
         newTask.subtasks = self.subtasks.symmetric_difference(other.subtasks)
         intersect = self.subtasks.intersection(other.subtasks)
         if intersect:
@@ -47,10 +49,12 @@ class TaskItem(object):
         return "%s(%s)" % (self.__class__.__name__, self.task)
 
     def __lt__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
         return self.task < other.task
 
     def __eq__(self, other):
-        if not isinstance(other, TaskItem):
+        if not isinstance(other, self.__class__):
             return False
         return self.task == other.task
 
@@ -68,7 +72,7 @@ class TaskItem(object):
                 out[-1].append(line.rstrip())
             else:
                 out.append([line.rstrip()])
-        return (tuple(i) for i in out)
+        return [tuple(i) for i in out]
 
 
 def make_tasks(paragraphs, divider=DIVIDER) -> list:
@@ -76,6 +80,8 @@ def make_tasks(paragraphs, divider=DIVIDER) -> list:
     done = set()
     titles = set()
     out = []
+
+    paragraphs = iter(paragraphs)
 
     for line in paragraphs:
         if line == ('',):

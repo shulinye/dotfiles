@@ -1,3 +1,4 @@
 htop
 moreutils
+okular
 vim

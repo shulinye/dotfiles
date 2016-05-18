@@ -85,7 +85,7 @@ def total_compare_by_key(cls=None, *, key=None, check_type=True):
         s = ["def {dunder}(self, other):".format(dunder=dunder)]
         if check_type:
             s.append("if not isinstance(other, self.__class__):")
-            s.append("    raise NotImplementedError")
+            s.append("    return NotImplemented")
         s.append("return self.{k} {symbol} other.{k}".format(k=key, symbol=symbol))
         scope = {}
         exec("\n    ".join(s), scope)

@@ -1,3 +1,4 @@
+import datetime
 import markdown
 import re
 import sys
@@ -24,5 +25,9 @@ marked_down = strike.sub(r'<strike>\1</strike>', marked_down)
 marked_down = marked_down.replace('<ul>\n<li>[', '<ul class="checklist">\n<li>[')
 marked_down = checkboxes.sub(prettify_checkbox, marked_down)
 
-final = ['<html><head><link rel="stylesheet" type="text/css" href="style.css"></head><body>', marked_down, '</body></html>']
+final = ['<html><head><link rel="stylesheet" type="text/css" href="style.css"><title>',
+        datetime.datetime.today().strftime('%b %d %Y'),
+        '</title></head><body>',
+        marked_down,
+        '</body></html>']
 print('\n'.join(final))

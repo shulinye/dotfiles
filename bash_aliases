@@ -30,8 +30,8 @@ function goto()
 
 function tasks()
 {
-    TODAY="$HOME/Notes/Journal/$(date +%Y/%m/%d.txt)"
-    THISMONTH="$HOME/Notes/Journal/$(date +%Y/%m.txt)"
+    TODAY="$HOME/Dropbox/Notes/Journal/$(date +%Y/%m/%d.txt)"
+    THISMONTH="$HOME/Dropbox/Journal/$(date +%Y/%m.txt)"
     if [ -f "$TODAY" ] ; then
         echo -e "${BOLD}Today's tasks - $(date +'%d %b %y') ${NONE}"
         grep '\[ \]' "$TODAY" | grep -v '~~.*~~$'
