@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 from datetime import datetime, timedelta
 import feedparser
@@ -11,10 +11,11 @@ import sys
 import re
 import operator
 import functools
+import warnings
 
-rtm_date = re.compile('<span class=\"rtm_due_value\">(?P<date>[a-zA-Z0-9\s]+)<')
-rtm_location = re.compile('<span class=\"rtm_location_value\">(?P<location>[a-zA-Z0-9\s]+)<')
-rtm_list = re.compile('<span class=\"rtm_list_value\">(?P<list>[a-zA-Z]+)<')
+rtm_date = re.compile(r'<span class="rtm_due_value">(?P<date>[a-zA-Z0-9\s:]+)<')
+rtm_location = re.compile(r'<span class="rtm_location_value">(?P<location>[a-zA-Z0-9\s]+)<')
+rtm_list = re.compile(r'<span class="rtm_list_value">(?P<list>[a-zA-Z]+)<')
 
 def goodreads(rss, prefix : str = '[ ]'):
     d = feedparser.parse(rss)
@@ -28,13 +29,23 @@ def rtm(rss, prefix : str = '[ ]', dateformat : str = '%d %b %y', days : int = 3
     d = feedparser.parse(rss)
     future = datetime.today() + timedelta(days)
     for i in d.entries:
-        date = datetime.strptime(rtm_date.search(i.summary).groups('date')[0], "%a %d %b %y")
-        if date <= future:
-            i["location"] = rtm_location.search(i.summary).groups('location')[0]
-            listMatch = rtm_list.search(i.summary)
-            i["list"] = "(@"+listMatch.groups('list')[0]+")" if listMatch else ''
-            print(prefix + " **DUE " + date.strftime(dateformat) + \
+        date_match = rtm_date.search(i.summary)
+        if date_match:
+            date_string = date_match.groups('date')[0].strip()
+            if 'at' in date_string:
+                date_string, time = date_string.split('at')
+            else:
+                time = ''
+            date = datetime.strptime(date_string.strip(), "%a %d %b %y")
+            if date <= future:
+                i["location"] = rtm_location.search(i.summary).groups('location')[0]
+                listMatch = rtm_list.search(i.summary)
+                i["list"] = "(@"+listMatch.groups('list')[0]+")" if listMatch else ''
+                print(prefix + " **DUE " + date.strftime(dateformat) + time + \
                     "**: %(title)s @ %(location)s %(list)s- %(link)s" % i)
+        else:
+            warnings.warn("dateless: " + i.summary, RuntimeWarning)
+            
 
 if __name__ == "__main__":
     import argparse
