@@ -33,9 +33,10 @@ echo -e "=== FROM DAILY ===\n\n" >> "$TODAY"
 movetasks "$DAILY" "$TODAY"
 
 if [ "$(date +%u)" = "$DoW" ] ; then
+    source zimweekly.sh
+fi
     echo -e "=== FROM THIS WEEK ===\n\n" >> "$TODAY"
     movetasks "$THISWEEK" "$TODAY"
-fi
 
 echo -e "=== FROM YESTERDAY ===\n\n" >> "$TODAY"
 movetasks "$YESTERDAY" "$TODAY"

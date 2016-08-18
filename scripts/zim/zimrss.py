@@ -32,17 +32,21 @@ def rtm(rss, prefix : str = '[ ]', dateformat : str = '%d %b %y', days : int = 3
         date_match = rtm_date.search(i.summary)
         if date_match:
             date_string = date_match.groups('date')[0].strip()
-            if 'at' in date_string:
-                date_string, time = date_string.split('at')
+            if ' at ' in date_string:
+                date_string, time = date_string.split(' at ')
             else:
                 time = ''
-            date = datetime.strptime(date_string.strip(), "%a %d %b %y")
-            if date <= future:
-                i["location"] = rtm_location.search(i.summary).groups('location')[0]
-                listMatch = rtm_list.search(i.summary)
-                i["list"] = "(@"+listMatch.groups('list')[0]+")" if listMatch else ''
-                print(prefix + " **DUE " + date.strftime(dateformat) + time + \
-                    "**: %(title)s @ %(location)s %(list)s- %(link)s" % i)
+            try:
+                date = datetime.strptime(date_string.strip(), "%a %d %b %y")
+            except ValueError:
+                warnings.warn("Bad date string: " + i.summary, RuntimeWarning)
+            else:
+                if date <= future:
+                    i["location"] = rtm_location.search(i.summary).groups('location')[0]
+                    listMatch = rtm_list.search(i.summary)
+                    i["list"] = "(@"+listMatch.groups('list')[0]+")" if listMatch else ''
+                    print(prefix + " **DUE " + date.strftime(dateformat) + time + \
+                        "**: %(title)s @ %(location)s %(list)s- %(link)s" % i)
         else:
             warnings.warn("dateless: " + i.summary, RuntimeWarning)
             
