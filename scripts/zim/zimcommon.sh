@@ -11,7 +11,7 @@ TODAY="$DIR/$(date +%d).txt"
 YESTERDAY="$JOURNALDIR/$(date -d 'yesterday' +%Y/%m/%d.txt)"
 TODO="$NOTESDIR/1_-_to-Do.txt"
 DAILY="$NOTESDIR/1_-_to-Do/Daily_Tasks.txt"
-WEEKLY="$NOTESDIR/1_-_to-Do/Weekly_Tasks.txt"
+THISWEEK="$DIR/Week_`date +%V`.txt"
 DoW=1 #Which day of the week do I want to have weekly tasks go to? 1 = Monday, 7 = Sunday (this uses $(date +%u))
 
 RTMMIRROR="$NOTESDIR/1_-_to-Do/RTM-Mirror.txt"

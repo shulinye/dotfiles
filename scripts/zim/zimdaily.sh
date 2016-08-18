@@ -33,8 +33,8 @@ echo -e "=== FROM DAILY ===\n\n" >> "$TODAY"
 movetasks "$DAILY" "$TODAY"
 
 if [ "$(date +%u)" = "$DoW" ] ; then
-    echo -e "=== FROM WEEKLY ===\n\n" >> "$TODAY"
-    movetasks "$WEEKLY" "$TODAY"
+    echo -e "=== FROM THIS WEEK ===\n\n" >> "$TODAY"
+    movetasks "$THISWEEK" "$TODAY"
 fi
 
 echo -e "=== FROM YESTERDAY ===\n\n" >> "$TODAY"
