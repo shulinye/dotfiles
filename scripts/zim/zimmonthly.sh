@@ -5,6 +5,7 @@ source zimcommon.sh
 THISMONTH="$DIR.txt"
 LASTMONTH="$JOURNALDIR/`date +'%Y/%m.txt' -d 'last month'`"
 MONTHLY="$NOTESDIR/1_-_to-Do/Monthly_Tasks.txt"
+NEXTMONTH="$NOTESDIR/1_-_to-Do/Next_Month.txt"
 TAGS="@Year$(date +%Y)"
 if [ ! -f "$THISMONTH" ] ; then
 
@@ -17,6 +18,9 @@ $TAGS \n
 $(fortune)\n
 ==== Tasks ==== \n\n" > "$THISMONTH"
 
+
+movetasks "$NEXTMONTH" "$THISMONTH"
+head -n6 "$NEXTMONTH" | sponge "$NEXTMONTH"
 
 echo -e "=== FROM LAST MONTH ($(date +'%B %Y' -d 'last month')) ===\n\n" >> "$THISMONTH"
 movetasks "$LASTMONTH" "$THISMONTH"

@@ -3,6 +3,7 @@
 source zimcommon.sh
 
 TAGS="@journal @diary @Year$(date +%Y)"
+TOMORROW="$NOTESDIR/1_-_to-Do/Tomorrow.txt"
 
 if [ ! -f "$TODAY" ] ; then
 
@@ -10,11 +11,14 @@ echo -e "Content-Type: text/x-zim-wiki
 Wiki-Format: $(zim --version | head -n1)
 Creation-Date: $(date +"%FT%T%:z") \n
 ====== $(date +"%A %d %b %Y") ====== \n
-Week $(date +%V)\n
+Week $(date +%U)\n
 $TAGS \n
 ==== Quote ==== \n
 $(fortune)\n
 ==== Tasks ==== \n\n" > "$TODAY"
+
+movetasks "$TOMORROW" "$TODAY"
+head -n6 "$TOMORROW" | sponge "$TOMORROW"
 
 echo -e "=== FROM TODO ===\n\n" >> "$TODAY"
 movetasks "$TODO" "$TODAY"

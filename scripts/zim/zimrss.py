@@ -34,6 +34,7 @@ def rtm(rss, prefix : str = '[ ]', dateformat : str = '%d %b %y', days : int = 3
             date_string = date_match.groups('date')[0].strip()
             if ' at ' in date_string:
                 date_string, time = date_string.split(' at ')
+                time = ' ' + time
             else:
                 time = ''
             try:
@@ -44,9 +45,9 @@ def rtm(rss, prefix : str = '[ ]', dateformat : str = '%d %b %y', days : int = 3
                 if date <= future:
                     i["location"] = rtm_location.search(i.summary).groups('location')[0]
                     listMatch = rtm_list.search(i.summary)
-                    i["list"] = "(@"+listMatch.groups('list')[0]+")" if listMatch else ''
-                    print(prefix + " **DUE " + date.strftime(dateformat) + time + \
-                        "**: %(title)s @ %(location)s %(list)s- %(link)s" % i)
+                    i["list"] = " ( @"+listMatch.groups('list')[0]+" )" if listMatch else ''
+                    print(("{0} **DUE {1}{2}**: %(title)s @ %(location)s%(list)s - %(link)s" \
+                            .format(prefix, date.strftime(dateformat), time)) % i)
         else:
             warnings.warn("dateless: " + i.summary, RuntimeWarning)
             
