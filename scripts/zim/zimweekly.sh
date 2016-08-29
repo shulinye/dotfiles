@@ -18,10 +18,14 @@ $TAGS \n
 $(fortune)\n
 ==== Tasks ==== \n\n" > "$THISWEEK"
 
-if [ -f "$LASTWEEK" ] ; then
+movetasks "$NEXTWEEK" "$THISWEEK"
+head -n6 "$NEXTWEEK" | sponge "$NEXTWEEK"
 
-    novetasks "$NEXTWEEK" "$THISWEEK"
-    head -n6 "$NEXTWEEK" | sponge "$NEXTWEEK"
+echo -e "=== WEEKLY TASKS ===\n\n" >> "$THISWEEK"
+movetasks "$WEEKLY" "$THISWEEK"
+
+
+if [ -f "$LASTWEEK" ] ; then
 
     echo -e "=== FROM LAST WEEK (Week $(date +'%U' -d '7 days ago')) ===\n\n" >> "$THISWEEK"
     movetasks "$LASTWEEK" "$THISWEEK"
@@ -34,8 +38,6 @@ if [ -f "$LASTWEEK" ] ; then
     fi
 fi
 
-echo -e "=== WEEKLY TASKS ===\n\n" >> "$THISWEEK"
-movetasks "$WEEKLY" "$THISWEEK"
 "$HOME/.dotfiles/scripts/zim/dedupzim.py" -i "$THISWEEK"
 
 cd $DIR

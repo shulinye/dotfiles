@@ -14,6 +14,7 @@ class Constants(Enum):
     TODO = os.path.join(NOTESDIR, "1_-_to-Do.txt")
     DAILY = os.path.join(NOTESDIR, "1_-_to-Do/Daily_Tasks.txt")
     WEEKLY = os.path.join(NOTESDIR, "1_-_to-Do/Weekly_Tasks.txt")
+    THISWEEK = os.path.join(DIR, "Week_{0}.txt".format(today.strftime("%U")))
     DoW = 1
 
 if not os.path.exists(Constants.DIR.value):
