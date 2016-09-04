@@ -32,6 +32,8 @@ def rtm(rss, prefix : str = '[ ]', dateformat : str = '%d %b %y', days : int = 3
         date_match = rtm_date.search(i.summary)
         if date_match:
             date_string = date_match.groups('date')[0].strip()
+            if 'never' in date_string:
+                continue
             if ' at ' in date_string:
                 date_string, time = date_string.split(' at ')
                 time = ' ' + time
