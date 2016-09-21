@@ -3,7 +3,7 @@
 . ./zimcommon.sh
 
 function replacezimfile() {
-    echo -e "$(head -n7 $1) \n $(./zimrss.py "${@:2}")" | sponge "$1"
+    echo -e "$(head -n6 $1) \n $(./zimrss.py "${@:2}")" | sponge "$1"
 }
 
 echo "Goodreads!"

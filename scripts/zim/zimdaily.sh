@@ -5,6 +5,10 @@ source zimcommon.sh
 TAGS="@journal @diary @Year$(date +%Y)"
 TOMORROW="$NOTESDIR/1_-_to-Do/Tomorrow.txt"
 
+if [ "$(date +'%d')" = "01" ] ; then
+    source zimmonthly.sh
+fi
+
 if [ ! -f "$TODAY" ] ; then
 
 echo -e "Content-Type: text/x-zim-wiki
@@ -48,7 +52,7 @@ if [ -f "$YESTERDAY" ] ; then
     if [ "$(grep -c '\[ \]' "$YESTERDAY" )" -gt 0 ] ; then
         sed -i -e '/~~/!s/\[ \] /\[x\] ~~/' -e '/~~.*~~/!s/~~.*$/&~~/' "$YESTERDAY"
         #Strike out yesterday's tasks.
-        "./dedupzim.py" -i "$YESTERDAY" #little bit of cleanup
+        "$HOME/.dotfiles/scripts/zim/dedupzim.py" -i "$YESTERDAY" #little bit of cleanup
         cd "$JOURNALDIR" &&
         git add "$YESTERDAY" &&
         git commit "$YESTERDAY" -m "Moving tasks from $(date -d 'yesterday' +%F) over to $(date +%F)"
