@@ -18,6 +18,9 @@ coins = OrderedDict([
     (1, 'penny'),
     ])
 
+plural = {i:i+'s' for i in coins.values()}
+plural.update({'penny': 'pennies'})
+
 PLACES = 2
 m = re.compile('\d*\.?\d*')
 
@@ -38,7 +41,7 @@ def main(change, cents_in_dollar=10**PLACES):
     print("In order to make change for $%s:" % change)
     results = change_machine(change*cents_in_dollar, coins)
     for amount, coin in zip(results, coins.values()):
-        if amount > 0: print("    %d %s(s)" % (amount, coin))
+        if amount > 0: print("    %d %s" % (amount, coin if amount==1 else plural[coin]))
 
 if __name__ == "__main__":
     for i in sys.argv[1:]:
