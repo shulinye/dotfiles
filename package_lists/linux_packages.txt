@@ -1,4 +1,6 @@
 htop
 moreutils
 okular
+texworks
+texlive-science
 vim
