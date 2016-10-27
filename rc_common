@@ -85,7 +85,7 @@ alias ld='ls -l | grep ^d'
 alias diskspace="du -S | sort -n -r |more"
 
 # It creates a new directory and then changes to that new directory
-function mkdcd ()
+function mkcd ()
 {
     if [ $# -ne 1 ]; then
         echo 'function takes exactly one argument!'
