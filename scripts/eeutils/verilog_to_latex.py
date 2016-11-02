@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+from itertools import tee
+
 def verilog_to_latex_timetable(filename, scale=None):
     mapping = {'x':'U','1':'H','0':'L'}
     f = list(zip(*[i.strip().split() for i in open(filename).readlines()[:-1]]))
     times = list(map(int,f[0]))
     scale = max(times[-1]//70,1) if scale is None else scale
-    diffs = [(i-j)/scale for i,j in zip(times[1:],times)]
+    diffs = [i/scale for i in gen_diffs(times)]
     print("Scale=%s" % scale)
     vals = f[1:]
     for line in vals:
@@ -26,3 +28,12 @@ def group(diffs, vals):
         else:
             gathered += i
     yield str(gathered) + lastval
+
+def gen_diffs(li):
+    g = iter(li)
+    paired = tee(g,2)
+    next(paired[1])
+    return ((j-i) for i,j in zip(*paired))
+
+if __name__ == "__main__":
+    import argparse

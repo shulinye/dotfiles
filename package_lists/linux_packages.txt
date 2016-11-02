@@ -1,6 +1,7 @@
 htop
 moreutils
 okular
+pwgen
 texworks
 texlive-science
 vim
