@@ -8,4 +8,5 @@ from .context import *
 from .filing import *
 from .heapq_wrapper import *
 from .testing import *
+from .streamutils import *
 from .utils import *

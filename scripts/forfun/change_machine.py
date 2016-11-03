@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from collections import OrderedDict
+from collections import OrderedDict, MutableMapping
 from decimal import Decimal, ROUND_HALF_EVEN
 import re
 import sys
@@ -46,4 +46,4 @@ def main(change, cents_in_dollar=10**PLACES):
 if __name__ == "__main__":
     for i in sys.argv[1:]:
         main(i)
-        print("")
+        print()
