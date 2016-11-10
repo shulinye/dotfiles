@@ -9,8 +9,9 @@ from pythonutils import gen_diffs
 
 def verilog_to_latex_timetable(filename, scale=None):
     mapping = {'x':'U','1':'H','0':'L'}
-    f = list(zip(*[i.strip().split() for i in open(filename).readlines()[:-1]]))
-    times = list(map(int,f[0]))
+    lines = open(filename).readlines()
+    f = list(zip(*[i.strip().split() for i in lines[:-1]]))
+    times = list(map(int,f[0])) + [int(lines[-1].split()[-1])]
     scale = max(times[-1]//60,1) if scale is None else scale
     diffs = [i/scale for i in gen_diffs(times)]
     yield 'Scale=%s' % scale
