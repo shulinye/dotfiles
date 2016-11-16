@@ -23,9 +23,13 @@ function auxpdflatex()
 
 function goto()
 {
-    file="$(f -l $1 | tail -n1)"
-    echo "$file"
-    cd "$(dirname $file)"
+    FILE=`f $1`
+    if [ -z "$FILE"]; then
+        echo "Nothing found"
+    else
+    echo "$FILE"
+       cd "$(dirname $FILE)"
+    fi
 }
 
 function tasks()

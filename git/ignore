@@ -47,4 +47,7 @@ tmp/
 __pycache__/
 
 #Ignore virtualenv
-venv/
+*venv/
+
+#Ignore output
+output
