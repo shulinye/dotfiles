@@ -3,3 +3,5 @@
 	name = Shulin Ye
 [push]
 	default = simple
+[help]
+	autocorrect = 25
