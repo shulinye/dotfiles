@@ -1,8 +1,11 @@
 #/usr/bin/python3
 
+from calendar import TextCalendar
 from datetime import datetime, timedelta
 from dateutil import parser as dateparser
 import os
+
+today = datetime.today()
 
 from zimcommon import Constants
 
@@ -13,8 +16,12 @@ def lastweek(date : str = None, n : int = 7):
         date = datetime.today()
     return (os.path.join(Constants.JOURNALDIR.value, (date - timedelta(x)).strftime("%Y/%m/%d.txt")) for x in range(1,n+1))
 
+def asciiMonth(year : int = today.year, month : int = today.month):
+    return ("''%s''" % i for i in TextCalendar(0).formatmonth(year,month).split('\n'))
+
 if __name__ == "__main__":
-    mapping = {"lastweek": lastweek}
+    mapping = {"lastweek": lastweek,
+               "asciiMonth": asciiMonth}
     import argparse
     import inspect
     parser = argparse.ArgumentParser()

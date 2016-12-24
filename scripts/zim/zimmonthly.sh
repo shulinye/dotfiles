@@ -13,10 +13,13 @@ echo -e "Content-Type: text/x-zim-wiki
 Wiki-Format: $(zim --version | head -n1)
 Creation-Date: $(date +"%FT%T%:z") \n
 ====== $(date +"%B %Y") ====== \n
-$TAGS \n
-==== Quote ==== \n
+$TAGS \n" > "$THISMONTH"
+
+python3 utils.py asciiMonth >> "$THISMONTH"
+
+echo -e "==== Quote ==== \n
 $(fortune)\n
-==== Tasks ==== \n\n" > "$THISMONTH"
+==== Tasks ==== \n\n" >> "$THISMONTH"
 
 
 movetasks "$NEXTMONTH" "$THISMONTH"

@@ -13,6 +13,8 @@ TODO="$NOTESDIR/1_-_to-Do.txt"
 DAILY="$NOTESDIR/1_-_to-Do/Daily_Tasks.txt"
 THISWEEK="$DIR/Week_`date +%U`.txt"
 DoW=1 #Which day of the week do I want to have weekly tasks go to? 1 = Monday, 7 = Sunday (this uses $(date +%u))
+TEMPLATEDIR="$NOTESDIR/3_-_Templates"
+
 
 RTMMIRROR="$NOTESDIR/1_-_to-Do/RTM-Mirror.txt"
 
