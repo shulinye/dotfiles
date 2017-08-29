@@ -23,6 +23,9 @@ sudo apt-key exportall > "$backups/$HOST-repo-`date +%F`.keys"
 echo "updating repos"
 sudo apt-get update
 
+packagelist="$dotfiles/package_lists/linux_packages.txt"
+xargs -a <(awk '! /^ *(#|$)/' "$packagelist") -r -- sudo apt-get install
+
 if hash pip 2>/dev/null; then
     pip freeze > $backups/$HOST-pip-packages_`date +%F`.txt 2>>$error
 else
