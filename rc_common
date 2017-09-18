@@ -41,17 +41,25 @@ function cat {
 alias h='history | grep'
 
 #New commands
-alias documents="cd ~/Documents"
-alias videos="cd ~/Videos"
-alias downloads='cd ~/Downloads'
-alias desktop='cd ~/Desktop'
-alias music='cd ~/Music'
-alias try="gnome-open"
+#alias documents="cd ~/Documents"
+#alias videos="cd ~/Videos"
+#alias downloads='cd ~/Downloads'
+#alias desktop='cd ~/Desktop'
+#alias music='cd ~/Music'
+alias try="gvfs-open"
 alias svim="sudo vim"
 alias del='mv --target-directory=~/.Trash/' #delete; that symlinks to /tmp/
 alias cleandir='rm -f "#"* "."*~ *~ *.bak *.dvi *.aux *.log'
 alias back='cd - > /dev/null'
-
+function document {
+    if [[ "$#" -eq 1 ]]
+        then FILENAME="$1$(date +%F).txt"
+        else FILENAME="$(date +%F).txt"
+    fi
+    touch "$FILENAME"
+    git rev-parse --git-dir > /dev/null 2&>1 && git add "$FILENAME"
+    vim "$FILENAME"
+}
 #Trying and failing to be funny
 alias fuckyou="echo 'Why, how dare you? Do you kiss your mother with that mouth?' && sleep 2 && sudo reboot"
 alias transfer-monies="echo 'How about no?'"
@@ -231,6 +239,7 @@ echo "---------------------------------------------------"
 
 #. /usr/share/autojump/autojump.sh
 # using fasd now
+eval "$(fasd --init auto)"
 
 export EDITOR=/usr/bin/vim
 #export AUTOJUMP_AUTOCOMPLETE_CMDS='cp vim'
