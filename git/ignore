@@ -5,6 +5,7 @@
 
 #ignore pdflatex extra files
 *.aux
+*.auxlock
 *.log
 *.toc
 *.lbf
