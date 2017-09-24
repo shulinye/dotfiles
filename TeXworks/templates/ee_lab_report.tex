@@ -25,7 +25,7 @@
 \usepackage{wrapfig}
 \usepackage{mathtools}
 \usepackage{amssymb}
-\usepackage[colorlinks,urlcolor=blue,linkcolor=black]{hyperref} % allow hyperlinks
+\PassOptionsToPackage{hyphens}{url}\usepackage[colorlinks,urlcolor=blue,linkcolor=black]{hyperref} % allow hyperlinks
 \usepackage{setspace} % allow doublespacing
 
 %%%%Useful packages and newcommands for them. Turn on when you need them
@@ -36,6 +36,11 @@
 %\usepackage{listings} %For code
 %\usepackage[T1]{fontenc} %Straight quotes
 %\usepackage{textcomp}
+%\lstset{%
+%    showstringspaces=false,
+%    upquote=true,
+%    literate={~} {$\sim$}{1},
+%}
 
 %\usepackage{forest} %For trees
 
@@ -63,6 +68,14 @@
 \newcommand{\partialdev}[2][]{\frac{\partial #1}{\partial #2}} %partial derivatives
 \newcommand{\checked}[0]{\mbox{\mathsurround=0pt \makebox[0pt][l]{$\checkmark$}$\square$}}
 \newcommand*\conj[1]{\overline{#1}}
+\newcommand{\degree}[2][]{\mbox{#1$^\circ$#2}}
+
+%Pretty units
+\newcommand{\inch}[0]{\,\text{in}}
+\newcommand{\mm}[0]{\,\text{mm}}
+\newcommand{\cm}[0]{\,\text{cm}}
+\newcommand{\um}[0]{\,\mu\text{m}}
+\newcommand{\unit}[1]{\,\text{#1}}
 % For long documents
 %\numberwithin{equation}{section}
 %\numberwithin{figure}{section}
@@ -80,11 +93,6 @@
 %%% CONSTANTS
 
 \begin{document}
-\lstset{%
-    showstringspaces=false,
-    upquote=true,
-    literate={~} {$\sim$}{1},
-}
 
 \maketitle
 %\setcounter{tocdepth}{1} % TOC to sections only
