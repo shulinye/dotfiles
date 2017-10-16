@@ -5,3 +5,5 @@
 	default = simple
 [help]
 	autocorrect = 25
+[core]
+	whitespace = warn
