@@ -28,6 +28,8 @@ alias ping='ping -c 5' #this causes ping to terminate after five pings
 alias wget='wget -c'
 alias texworks="texworks -stylesheet ~/.TeXworks/configuration/mystyle.css" #causes texworks to autoload my stylesheet
 
+alias pm-suspend="systemctl suspend"
+
 # lua's silly cat
 alias less='less -FX'
 function cat {
@@ -46,7 +48,7 @@ alias h='history | grep'
 #alias downloads='cd ~/Downloads'
 #alias desktop='cd ~/Desktop'
 #alias music='cd ~/Music'
-alias try="gvfs-open"
+alias try="gio open"
 alias svim="sudo vim"
 alias del='mv --target-directory=~/.Trash/' #delete; that symlinks to /tmp/
 alias cleandir='rm -f "#"* "."*~ *~ *.bak *.dvi *.aux *.log'
@@ -57,7 +59,7 @@ function document {
         else FILENAME="$(date +%F).txt"
     fi
     touch "$FILENAME"
-    git rev-parse --git-dir > /dev/null 2&>1 && git add "$FILENAME"
+    git rev-parse --git-dir > /dev/null && git add "$FILENAME"
     vim "$FILENAME"
 }
 #Trying and failing to be funny
