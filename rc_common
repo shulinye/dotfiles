@@ -53,6 +53,13 @@ alias svim="sudo vim"
 alias del='mv --target-directory=~/.Trash/' #delete; that symlinks to /tmp/
 alias cleandir='rm -f "#"* "."*~ *~ *.bak *.dvi *.aux *.log'
 alias back='cd - > /dev/null'
+function secret {
+    if [[ "$#" -eq 1 ]]
+        then NUMBER="$1"
+        else NUMBER="20"
+    fi
+    < /dev/urandom tr -dc A-Z-a-z | head -c "$NUMBER"
+    }
 function document {
     if [[ "$#" -eq 1 ]]
         then FILENAME="$1$(date +%F).txt"
@@ -77,8 +84,8 @@ alias update='sudo apt-get update'
 function upgrade()
 {
     sudo apt-get dist-upgrade
-    python3 -c "import pip; import subprocess; [subprocess.call('sudo -H pip3 install --upgrade ' + dist.project_name, shell=True) for dist in pip.get_installed_distributions()]"
-    python -c "import pip; import subprocess; [subprocess.call('sudo -H pip install --upgrade ' + dist.project_name, shell=True) for dist in pip.get_installed_distributions()]"
+    python3 -c "import pip; import subprocess; import pkg_resources; [subprocess.call('sudo -H pip3 install --upgrade ' + dist.project_name, shell=True) for dist in pkg_resources.working_set]"
+    python -c "import pip; import subprocess; import pkg_resources; [subprocess.call('sudo -H pip install --upgrade ' + dist.project_name, shell=True) for dist in pkg_resouces.working_set]"
 }
 alias clean='sudo apt-get autoclean && sudo apt-get autoremove'
 function canhaz()
@@ -189,8 +196,8 @@ HISTSIZE=100000
 HISTFILESIZE=200000
 
 # things to get an android phone to sync
-alias android-connect="mtpfs -o allow_other /media/LGOptimus"
-alias android-disconnect="fusermount -u /media/LGOptimus"
+#alias android-connect="mtpfs -o allow_other /media/LGOptimus"
+#alias android-disconnect="fusermount -u /media/LGOptimus"
 
 #Welcome screen
 echo -ne "${LIGHTPURPLE}" "Hello, $USER. Today is "; date
@@ -226,18 +233,19 @@ alias aoeu="xmodmap $HOME/.Xmodmap"
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(lesspipe)"
 
-netinfo ()
-{
-echo "--------------- Network Information ---------------"
-/sbin/ifconfig | awk /'inet addr/ {print $2}'
-echo ""
-/sbin/ifconfig | awk /'Bcast/ {print $3}'
-echo ""
-/sbin/ifconfig | awk /'inet addr/ {print $4}'
 
+
+#netinfo () #Broken, need to fix.
+#{
+#echo "--------------- Network Information ---------------"
+#/sbin/ifconfig | awk /'inet addr/ {print $2}'
+#echo ""
+#/sbin/ifconfig | awk /'Bcast/ {print $3}'
+#echo ""
+#/sbin/ifconfig | awk /'inet addr/ {print $4}'
 # /sbin/ifconfig | awk /'HWaddr/ {print $4,$5}'
-echo "---------------------------------------------------"
-}
+#echo "---------------------------------------------------"
+#}
 
 #. /usr/share/autojump/autojump.sh
 # using fasd now
@@ -251,3 +259,6 @@ export EDITOR=/usr/bin/vim
 #kinit -R &>/dev/null
 #(klist -s || kinit -l7d || kinit -l7d || kinit -l7d) && (aklog || attach shulinye || (kdestroy && kinit -l7d || kinit -l7d || kinit -l7d) && aklog || attach shulinye)
 
+
+#Install Ruby Gems to ~/gems
+export GEM_HOME="$HOME/gems"

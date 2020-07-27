@@ -1,5 +1,5 @@
+matplotlib
 numpy
 ordered-set
 pandas
 pep8
-matplotlib

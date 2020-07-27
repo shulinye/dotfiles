@@ -24,7 +24,7 @@ function auxpdflatex()
 function goto()
 {
     FILE=`f $1`
-    if [ -z "$FILE"]; then
+    if [ -z "$FILE" ]; then
         echo "Nothing found"
     else
     echo "$FILE"
