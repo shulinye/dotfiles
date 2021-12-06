@@ -14,11 +14,15 @@ fi
 #bold
 NONE='\033[00m'
 BOLD='\033[1m'
+BLACK='\033[30m'
+CYAN='\033[36m'
+LIGHTPURPLE='\033[38;5;134m'
 
 #Making common commands more awesome by default
 alias cp="cp -iv"
 alias mv="mv -iv"
 alias rm="rm -I"
+alias ls="ls --color"
 alias ll='ls -lB'
 alias la="ls -alB" #B - ignores backup
 alias psa="ps aux | sort -nrk 4 | head"
@@ -84,8 +88,8 @@ alias update='sudo apt-get update'
 function upgrade()
 {
     sudo apt-get dist-upgrade
-    python3 -c "import pip; import subprocess; import pkg_resources; [subprocess.call('sudo -H pip3 install --upgrade ' + dist.project_name, shell=True) for dist in pkg_resources.working_set]"
-    python -c "import pip; import subprocess; import pkg_resources; [subprocess.call('sudo -H pip install --upgrade ' + dist.project_name, shell=True) for dist in pkg_resouces.working_set]"
+    #python3 -c "import pip; import subprocess; import pkg_resources; [subprocess.call('sudo -H pip3 install --upgrade ' + dist.project_name, shell=True) for dist in pkg_resources.working_set]"
+    #python -c "import pip; import subprocess; import pkg_resources; [subprocess.call('sudo -H pip install --upgrade ' + dist.project_name, shell=True) for dist in pkg_resouces.working_set]"
 }
 alias clean='sudo apt-get autoclean && sudo apt-get autoremove'
 function canhaz()
@@ -200,11 +204,10 @@ HISTFILESIZE=200000
 #alias android-disconnect="fusermount -u /media/LGOptimus"
 
 #Welcome screen
-echo -ne "${LIGHTPURPLE}" "Hello, $USER. Today is "; date
-echo -e "${WHITE}"; cal;
-echo -ne "${CYAN}"; fortune;
-echo -ne "${LIGHTPURPLE}Sysinfo:";uptime ;echo ""
-
+echo -ne "${LIGHTPURPLE}Hello, $USER. Today is "; date; echo ""
+echo -ne "${CYAN}"; fortune; echo ""
+echo -ne "${LIGHTPURPLE}Sysinfo:"; uptime ;
+echo -e "${NONE}"; ccal --e --f; echo ""
 #Opens current directory in a file explorer
 alias explore='nautilus .'
 
@@ -262,3 +265,5 @@ export EDITOR=/usr/bin/vim
 
 #Install Ruby Gems to ~/gems
 export GEM_HOME="$HOME/gems"
+
+
