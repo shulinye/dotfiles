@@ -9,7 +9,7 @@ import types
 
 from .utils import walk_getattr
 
-__all__ = ['autoinit', 'autorepr', 'total_compare_by_key']
+__all__ = ['autoinit', 'autorepr', 'TotalCompareByKey']
 
 
 def autoinit(obj=None, *args, params=None, **kwargs):
@@ -70,24 +70,27 @@ def autorepr(obj=None, *, params=None):
     else: #Being a normal function here :P
         return "%s(%s)" % (obj.__class__.__name__, ", ".join("%s=%r" % (i, getattr(obj,i)) for i in params))
 
-def total_compare_by_key(cls=None, *, key=None, check_type=True):
-    """Total ordering, based on one attribute only"""
-    if cls is None: return partial(order_by_key, key=key)
-    if key is None: raise RuntimeError("Key for ordering required")
-    orderings = {'__lt__': '<',
-                 '__le__': '<=',
-                 '__gt__': '>',
-                 '__ge__': '>=',
-                 '__eq__': '==',
-                 '__ne__': '!='}
-    for dunder, symbol in orderings.items():
-        if dunder in cls.__dict__: continue
-        s = ["def {dunder}(self, other):".format(dunder=dunder)]
-        if check_type:
-            s.append("if not isinstance(other, self.__class__):")
-            s.append("    return NotImplemented")
-        s.append("return self.{k} {symbol} other.{k}".format(k=key, symbol=symbol))
-        scope = {}
-        exec("\n    ".join(s), scope)
-        setattr(cls, dunder, scope[dunder])
-    return cls
+class TotalCompareByKey(object):
+    """Writes all comparison methods using one key"""
+    __slots__ = ['key', 'check_type']
+    def __init__(self, key, *, check_type=True):
+        self.key = key
+        self.check_type = check_type
+    def __call__(self, cls):
+        orderings = {'__lt__': '<',
+                     '__le__': '<=',
+                     '__gt__': '>',
+                     '__ge__': '>=',
+                     '__eq__': '==',
+                     '__ne__': '!='}
+        for dunder, symbol in orderings.items():
+            if dunder in cls.__dict__: continue
+            s = ["def {dunder}(self, other):".format(dunder=dunder)]
+            if self.check_type:
+                s.append("if not isinstance(other, self.__class__):")
+                s.append("    return NotImplemented")
+            s.append("return self.{k} {symbol} other.{k}".format(k=self.key, symbol=symbol))
+            scope = {}
+            exec("\n    ".join(s), scope)
+            setattr(cls, dunder, scope[dunder])
+        return cls

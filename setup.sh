@@ -29,6 +29,10 @@ sudo apt-get update
 packagelist="$dotfiles/package_lists/linux_packages.txt"
 xargs -L1 -a "$packagelist" -r -- sudo apt-get install
 
+pip3 install --upgrade pip
+
+xargs -L1 -a "$dotfiles/package_lists/python_packages.txt" -r -- pip3 install
+
 if hash pip 2>/dev/null; then
     pip freeze > $backups/$HOST-pip-packages_`date +%F`.txt 2>>$error
 else
@@ -62,7 +66,7 @@ if [ ! -d "$HOME/.config/git" ]; then
     mkdir -p "$HOME/.config/git"
 fi
 
-ln -sf $dotfiles/git/ignore $HOME/.config/git/ignore
+#ln -sf $dotfiles/git/ignore $HOME/.config/git/ignore
 
 mkdir -p $HOME/.vim/backup
 

@@ -69,5 +69,5 @@ git add "$TODAY"
 git commit "$TODAY" -m "Initial commit: $(date +%F)"
 fi
 
-mkdir -p "$HOME/Dropbox/todo"
-cat "$TODAY" | python "$HOME/.dotfiles/scripts/zim/tohtml.py" > "$HOME/Dropbox/todo/today"
+#mkdir -p "$HOME/Dropbox/todo"
+#cat "$TODAY" | python "$HOME/.dotfiles/scripts/zim/tohtml.py" > "$HOME/Dropbox/todo/today"
