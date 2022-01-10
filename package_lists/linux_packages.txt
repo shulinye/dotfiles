@@ -1,6 +1,7 @@
 ccal
 espeak
 fortune-mod
+gimp
 git
 htop
 iftop

@@ -23,15 +23,16 @@ sudo apt-key exportall > "$backups/$HOST-repo-`date +%F`.keys"
 
 sudo add-apt-repository universe
 
+echo ""
 echo "updating repos"
 sudo apt-get update
+
+echo "installing packages"
 
 packagelist="$dotfiles/package_lists/linux_packages.txt"
 xargs -L1 -a "$packagelist" -r -- sudo apt-get install
 
 pip3 install --upgrade pip
-
-xargs -L1 -a "$dotfiles/package_lists/python_packages.txt" -r -- pip3 install
 
 if hash pip 2>/dev/null; then
     pip freeze > $backups/$HOST-pip-packages_`date +%F`.txt 2>>$error
@@ -39,6 +40,8 @@ else
     echo "pip not installed, continuing happily"
     echo "pip not installed" >>$error
 fi
+
+xargs -L1 -a "$dotfiles/package_lists/python_packages.txt" -r -- pip3 install
 
 sudo cp "$dotfiles/scripts/define" "/usr/local/bin/define"
 
